@@ -1,0 +1,155 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  flex-direction: column;
+  overflow-x: hidden;
+  padding: 0;
+}
+
+.header {
+  background-color: #ffffff;
+  box-shadow: 4px 0 5px 0 rgb(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 30px;
+  width: 96%;
+}
+
+.user-auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.link-buttons {
+  padding: 10px 25px;
+  border-radius: 15px;
+  /* border: 0 solid black; */
+}
+
+#login-btn {
+  background-color: white;
+  border: 0.2px solid #a8a8a8;
+}
+
+#signup-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: 0;
+}
+
+.main-container {
+  width: 90%;
+}
+
+.main-section {
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+  justify-content: center;
+  gap: 30px;
+}
+
+a {
+  text-decoration: none;
+  display: block;
+  color: black;
+  width: fit-content;
+}
+
+#new-post {
+  border-radius: 10px;
+  width: 90%;
+  margin: 20px 0;
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ddd;
+}
+
+#new-post form {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+
+#new-post input[type="text"],
+#new-post textarea {
+  width: 100%;
+  /* margin-top: 8px; */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#new-post textarea {
+  height: 200px;
+  overflow-y: auto;
+  resize: none;
+}
+
+#new-post button {
+  padding: 10px 20px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#new-post button:hover {
+  background-color: #004494;
+}
+
+.input-label {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+#topics .topic {
+  margin: 20px;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+#topics h3 {
+  color: #333;
+}
+
+.details {
+  margin: 0;
+  font-size: 14px;
+  margin-top: 10px;
+  color: #8d8f90;
+}
+
+.tag-input-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.tag-input-container label {
+  font-weight: normal;
+  font-size: 14px;
+  /* text-align: center; */
+}
+
+#submit-button {
+  margin-top: 10px;
+}
+
+/* Clearfix for the container */
+.tag-input-container::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.error-container {
+  color: red;
+  font-size: 12px;
+  font-weight: bold;
+}

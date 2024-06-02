@@ -1,0 +1,10 @@
+*.exe
+
+.vscode/
+
+# Moh Items
+export.py
+output.txt
+tree.txt
+
+

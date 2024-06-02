@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Forum</title>
+    <link rel="stylesheet" href="./css/create-post.css" />
+  </head>
+  <body>
+    <div class="main-container">
+    <section id="new-post">
+      <h2>Create a Topic</h2>
+      <form action="/posts" method="POST">
+        <div>
+          <label for="title" class="input-label">Title:</label>
+          <p class="details">Be specific and summarize your topic</p>
+          <input type="text" id="title" name="title" value="{{if .Title}}{{.Title}}{{end}}" required /><br />
+        </div>
+
+        <div>
+          <label for="message" class="input-label">Message:</label>
+          <p class="details">Provide the details of the topic</p>
+          <textarea id="body-content" name="message" required>{{if .Body}}{{.Body}}{{end}}</textarea><br />
+        </div>
+
+        <div class="tags" id="categories">
+          <label class="input-label">Tags:</label>
+          <!-- <p class="details">choose the tags that is relevent to your topic</p> -->
+          <div class="tag-input-container"></div>
+        </div>
+        <div class="error-container" id="error">{{.ErrorMsg}}</div>
+        <button type="submit">Post Topic</button>
+      </form>
+    </section>
+    </div>
+    <script src="./js/nav.js"></script>
+    <script src="./js/CreatePost.js"></script>
+  </body>
+</html>

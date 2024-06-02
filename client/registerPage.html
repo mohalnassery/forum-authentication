@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/register.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Document</title>
+</head>
+<body>
+    <div class="register-container">
+        <div class="form-container">
+            <h1>Register</h1>
+            <form action="" class="register-form">
+                <div class="input-container">
+                    <i class="fas fa-user"></i>
+                    <input type="text" class="form-input" id="username" placeholder="Username" required>
+                </div>
+                
+                <div class="input-container">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" class="form-input" id="email" placeholder="Email" required>
+                </div>
+
+                <div class="input-container">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-input" id="password" placeholder="Password" required>
+                </div>
+                <div class="error-container" id="error"></div>
+                <button type="submit">Register</button>
+            </form>
+            <a href="/login">already have an account?</a>
+        </div>
+        <img src="./assets/Wavy_Tech-28_Single-10-min.jpg" alt="register image">
+    </div>
+
+    <script src="./js/Register.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="./css/home.css" />
+</head>
+
+<body>
+
+  <div class="main-container">
+    <div class="left-section">
+      <div class="stats" id="user-stats">
+        <h1>My Stats</h1>
+        <div class="stat-item">
+          <p>Number of posts created:</p>
+          <span id="user-posts"></span>
+        </div>
+        <div class="stat-item">
+          <p>Number of comments:</p>
+          <span id="user-comments"></span>
+        </div>
+        <div class="stat-item">
+          <p>Number of Likes:</p>
+          <span id="user-likes"></span>
+        </div>
+        <div class="stat-item">
+          <p>Number of Dislikes:</p>
+          <span id="user-dislikes"></span>
+        </div>
+      </div>
+
+      <div class="stats" id="alluser-stats">
+        <h1>Forum Statistics</h1>
+        <div class="stat-item">
+          <p>Total number of posts:</p>
+          <span id="total-posts"></span>
+        </div>
+        <div class="stat-item">
+          <p>Total number of comments:</p>
+          <span id="total-comments"></span>
+        </div>
+        <div class="stat-item">
+          <p>Total number of likes:</p>
+          <span id="total-likes"></span>
+        </div>
+        <div class="stat-item">
+          <p>Total number of dislikes:</p>
+          <span id="total-dislikes"></span>
+        </div>
+      </div>
+
+
+      <div class="stats" id="categories">
+        <h1>Filter By Category</h1>
+        <div class="category-container"></div>
+      </div>
+    </div>
+
+    <div class="middle-section">
+      <div class="create-section">
+        <h1>All Posts</h1>
+        <a href="/create">
+          <button id="create-btn">Create Post</button>
+        </a>
+      </div>
+
+      <div class="posts-section"></div>
+    </div>
+
+    <div class="right-section">
+      <div class="leaderboard">
+        <h1>LeaderBoard</h1>
+        <div id="user-leaderboard"></div>
+      </div>
+
+
+      <div class="filter-options" id="user-filters">
+        <h1>Filter By</h1>
+
+        <div class="options">
+          <div>Created Posts</div>
+          <div>Liked Posts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./js/nav.js"></script>
+  <script src="./js/Index.js"></script>
+</body>
+
+</html>

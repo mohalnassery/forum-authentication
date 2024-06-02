@@ -1,0 +1,123 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8f8;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+}
+
+@media (min-width: 1600px) {
+  .login-container {
+    border-radius: 10px;
+    box-shadow: 10px 10px 13px 0px rgba(0, 0, 0, 0.5);
+    background-color: white;
+    min-width: 55rem;
+    /* max-width: 60rem; */
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+  }
+}
+
+@media (max-width: 1600px) {
+  .login-container {
+      border-radius: 10px;
+      box-shadow: 10px 10px 13px 0px rgba(0, 0, 0, 0.5);
+      background-color: white;
+      min-width: 50rem;
+      width: 55%;
+      /* max-width: 60rem; */
+      height: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 0;
+  }
+}
+
+img {
+    width: 30rem;
+    /* padding-left: 30px; */
+    height: auto;
+}
+
+.form-container {
+    width: 35%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
+h1 {
+    position: relative;
+    top: -35px;
+    left: 0;
+    font-size: 2.5rem;
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-container i {
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    transform: translateY(-50%);
+}
+
+.form-input {
+    width: 100%;
+    text-indent: 40px;
+    border: none;
+    border-bottom: 1px solid #000;
+}
+
+.form-input:focus {
+    border-color: #4A90E2;
+    outline: none;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+form button {
+    margin-bottom: 20px;
+    width: 40%;
+    padding: 10px; 
+    border: .5px solid #4A90E2;
+    border-radius: 5px;
+    background-color: #4A90E2;
+    color: white;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #4178be; /* Darkened by about 10% */
+    color: white;
+}
+
+.form-container a {
+    color: #000;
+    font-size: 14px;
+    width: fit-content;
+}
+
+.error-container {
+    color: red;
+    font-size: 12px;
+    font-weight: bold;
+}

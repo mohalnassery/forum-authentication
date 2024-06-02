@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" type="text/css" href="/css/post-details.css" />
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="main-section">
+    <div class="post-container">
+      <div class="top">
+        <a href="/" class="back-button">
+          <div class="back-button">
+            <i class="fa-solid fa-arrow-left"></i>
+          </div>
+        </a>
+        <div class="info">
+          <div class="avatar" id="post-author-avatar">J</div>
+          <p id="post-author">John <span>• 21-10-2003</span></p>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h1 id="post-title">Title Of Post</h1>
+        {{if .ImageURL}}
+        <img id="post-image" src="{{.ImageURL}}" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 20px;">
+        {{end}}
+        <p id="post-body">
+        </p>
+      </div>
+
+      <div class="tags" id="post-tags">
+        <!-- Categories will be dynamically added here -->
+      </div>
+
+      <div id="post-actions">
+
+        <div class="stats">
+          <div class="like-dislike">
+            <div>
+              <p id="post-likes">30</p>
+              <i class="fa-solid fa-thumbs-up" id="like-btn" [class.liked]="post.userLiked"></i>
+            </div>
+
+            <div>
+              <p id="post-dislikes">5</p>
+              <i class="fa-solid fa-thumbs-down" id="dislike-btn" [class.disliked]="post.userDisliked"></i>
+            </div>
+          </div>
+
+          <div class="comment">
+            <p id="post-comments">10</p>
+            <i class="fa-solid fa-comment"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-immitate" id="comment-input" contenteditable="true" placeholder="Add a Comment..."
+        maxlength="500"></div>
+      <div class="error-container" id="error"></div>
+      <div class="submit-comment-div">
+        <button id="submit-comment" class="submit-button">Submit</button>
+        <span id="char-count">500/500</span>
+      </div>
+      <p>
+        <strong>Please Note:</strong>Your comments will be public and visible
+        to everyone. We encourage a respectful and constructive dialogue.
+        Ensure your contributions are relevant to the topic and add value to
+        the discussion. Thank you for sharing your insights!
+      </p>
+    </div>
+
+    <div class="comment-section" id="comment-section">
+      <div class="comment">
+        <div class="info">
+          <div class="avatar">J</div>
+          <p>John <span>• 21-10-2003</span></p>
+        </div>
+
+        <p class="comment-data">
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus
+          dolor rem autem! Pariatur nostrum a repellat quas veritatis rerum
+          debitis. Omnis nisi nobis optio maiores dolores ipsa neque
+          architecto sint placeat temporibus? Laborum fugiat, possimus ab
+          aliquid minima non quidem repudiandae officia ullam porro? Dolor
+          sapiente quod perferendis adipisci perspiciatis.
+        </p>
+
+        <div class="like-dislike">
+          <div>
+            <p class="comment-likes">30</p>
+            <i class="fa-solid fa-thumbs-up" [id]="'like-comment-' + comment.id" [class.liked]="comment.userLiked"></i>
+          </div>
+
+          <div>
+            <p class="comment-dislikes">5</p>
+            <i class="fa-solid fa-thumbs-down" [id]="'dislike-comment-' + comment.id"
+              [class.disliked]="comment.userDisliked"></i>
+          </div>
+        </div>
+
+
+        <div class="comment">
+          <div class="info">
+            <div class="avatar">J</div>
+            <p>John <span>• 21-10-2003</span></p>
+          </div>
+
+          <p class="comment-data">
+
+          </p>
+
+          <div class="like-dislike">
+            <div>
+              <p>30</p>
+              <i id="like-btn" class="fa-solid fa-thumbs-up" disabled></i>
+            </div>
+
+            <div>
+              <p>5</p>
+              <i id="dislike-btn" class="fa-solid fa-thumbs-down" disabled></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/nav.js"></script>
+    <script src="/js/postDetails.js"></script>
+</body>
+
+</html>
