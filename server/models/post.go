@@ -7,6 +7,7 @@ type Post struct {
 	Categories   []string `json:"categories"`
 	PostID       int      `json:"postID"`
 	AuthorID     int      `json:"authorID"`
+	Image        string   `json:"image"`
 }
 
 type PostHome struct {
@@ -27,6 +28,7 @@ type PostHome struct {
 type PostCreate struct {
 	Title      string   `json:"title"`
 	Body       string   `json:"body"`
+	Image      string   `json:"image"`
 	Categories []string `json:"categories"`
 	ErrorMsg   string   `json:"errormsg"`
 }

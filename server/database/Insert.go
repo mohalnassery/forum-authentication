@@ -25,8 +25,8 @@ func InsertUser(user *models.UserRegisteration) error {
 }
 
 func InsertPost(post *models.Post) error { // Insert the post into the database
-	result, err := DB.Exec("INSERT INTO posts (title, body, creation_date, author) VALUES (?, ?, ?, ?)",
-		post.Title, post.Body, post.CreationDate, post.AuthorID)
+	result, err := DB.Exec("INSERT INTO posts (title, body, image, creation_date, author) VALUES (?, ?, ?, ?, ?)",
+		post.Title, post.Body, post.Image, post.CreationDate, post.AuthorID)
 	if err != nil {
 		return err
 	}

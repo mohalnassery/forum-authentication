@@ -1,8 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
   checkLoginStatus();
   createCategoryCheckboxes();
+  validateImageUpload();
 });
 
+function validateImageUpload() {
+  const imageInput = document.getElementById("image");
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files[0];
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    const maxSize = 20 * 1024 * 1024; // 20 MB
+
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        alert("Only JPEG, PNG, and GIF file types are allowed.");
+        imageInput.value = "";
+      } else if (file.size > maxSize) {
+        alert("File size exceeds the maximum limit of 20 MB.");
+        imageInput.value = "";
+      }
+    }
+  });
+}
 // fetchCategories.js
 async function fetchCategories() {
   try {
@@ -50,5 +69,30 @@ async function checkLoginStatus() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   if (!isLoggedIn) {
     window.location.href = "/login";
+  }
+}
+
+
+async function createPost(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch("/posts", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      // Post created successfully
+      window.location.href = "/";
+    } else {
+      // Handle error response
+      console.error("Failed to create post");
+    }
+  } catch (error) {
+    console.error("Error creating post:", error);
   }
 }

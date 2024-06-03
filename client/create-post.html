@@ -10,7 +10,7 @@
     <div class="main-container">
     <section id="new-post">
       <h2>Create a Topic</h2>
-      <form action="/posts" method="POST">
+      <form action="/posts" method="POST" enctype="multipart/form-data">
         <div>
           <label for="title" class="input-label">Title:</label>
           <p class="details">Be specific and summarize your topic</p>
@@ -21,6 +21,13 @@
           <label for="message" class="input-label">Message:</label>
           <p class="details">Provide the details of the topic</p>
           <textarea id="body-content" name="message" required>{{if .Body}}{{.Body}}{{end}}</textarea><br />
+        </div>
+
+        <!-- image -->
+        <div>
+          <label for="image" class="input-label">Image:</label>
+          <p class="details">Select an image to include in your post (max 20 MB)</p>
+          <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.gif" />
         </div>
 
         <div class="tags" id="categories">

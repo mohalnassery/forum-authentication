@@ -3,9 +3,13 @@ package routes
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"forum/database"
 	"forum/models"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +35,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		CreatePostTemplate(w, models.PostCreate{
 			Title:      title,
 			Body:       body,
+			Image:      "",
 			ErrorMsg:   "Empty Title/Body",
 			Categories: categories,
 		})
@@ -60,6 +65,43 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// IMAGE UPLOAD
+	// Parse the multipart form data
+	err = r.ParseMultipartForm(20 << 20) // 20 MB max file size
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Get the image file from the form data
+	file, header, err := r.FormFile("image")
+	if err != nil && err != http.ErrMissingFile {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var imagePath string
+	if file != nil {
+		// Generate a unique filename for the uploaded image
+		ext := filepath.Ext(header.Filename)
+		filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+		imagePath = filepath.Join("uploads", filename)
+
+		// Save the uploaded image file
+		dst, err := os.Create(imagePath)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer dst.Close()
+
+		_, err = io.Copy(dst, file)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
 	// Create a new post object with the form data and user ID
 	post := &models.Post{
 		Title:        title,
@@ -67,6 +109,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		CreationDate: time.Now().Format(time.RFC3339),
 		AuthorID:     userID,
 		Categories:   categories,
+		Image:        imagePath,
 	}
 
 	err = database.InsertPost(post)
