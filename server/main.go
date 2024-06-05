@@ -1,11 +1,15 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"forum/database"
 	"forum/routes"
 	"log"
 	"net/http"
+	"time"
+
+	"golang.org/x/time/rate"
 )
 
 func main() {
@@ -13,6 +17,11 @@ func main() {
 	defer database.DB.Close()
 
 	r := http.NewServeMux()
+
+	// Create a rate limiter with a maximum of 100 requests per minute
+	limiter := rate.NewLimiter(rate.Every(time.Minute), 100)
+
+	http.Handle("/", limitMiddleware(limiter, r))
 
 	// displaying pages
 	r.HandleFunc("/", routes.HandleGet)
@@ -58,8 +67,39 @@ func main() {
 	r.Handle("/assets/", http.FileServer(http.Dir("../client")))
 	r.Handle("/uploads/", http.FileServer(http.Dir("../client")))
 
-	fmt.Println("Server is running on http://localhost:8080")
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	// Configure SSL/TLS
+	tlsConfig := &tls.Config{
+		MinVersion:               tls.VersionTLS12,
+		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
+		PreferServerCipherSuites: true,
+		CipherSuites: []uint16{
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+		},
+	}
+
+	server := &http.Server{
+		Addr:         ":8443",
+		Handler:      r,
+		TLSConfig:    tlsConfig,
+		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler)),
+	}
+
+	fmt.Println("Server is running on https://localhost:8443")
+	if err := server.ListenAndServeTLS("../server/cert.pem", "../server/key.pem"); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// limitMiddleware is a middleware that applies rate limiting
+func limitMiddleware(limiter *rate.Limiter, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !limiter.Allow() {
+			http.Error(w, "Too many requests", http.StatusTooManyRequests)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
