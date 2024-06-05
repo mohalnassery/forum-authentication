@@ -79,6 +79,22 @@ async function createPost(event) {
   const form = event.target;
   const formData = new FormData(form);
 
+  // Perform client-side validation
+  const imageInput = document.getElementById("image");
+  const file = imageInput.files[0];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+  const maxSize = 20 * 1024 * 1024; // 20 MB
+
+  if (file) {
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only JPEG, PNG, and GIF file types are allowed.");
+      return;
+    } else if (file.size > maxSize) {
+      alert("File size exceeds the maximum limit of 20 MB.");
+      return;
+    }
+  }
+
   try {
     const response = await fetch("/posts", {
       method: "POST",

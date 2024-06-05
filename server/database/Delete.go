@@ -1,5 +1,10 @@
 package database
 
+import (
+	"os"
+	"path/filepath"
+)
+
 func DeletePost(postID, userID int) error {
 	tx, err := DB.Begin()
 	if err != nil {
@@ -7,6 +12,12 @@ func DeletePost(postID, userID int) error {
 	}
 	defer tx.Rollback()
 
+	// Retrieve the image file path from the posts table
+	var imagePath string
+	err = tx.QueryRow("SELECT image FROM posts WHERE post_id = ? AND author = ?", postID, userID).Scan(&imagePath)
+	if err != nil {
+		return err
+	}
 	_, err = tx.Exec("DELETE FROM posts WHERE post_id = ? AND author = ?", postID, userID)
 	if err != nil {
 		return err
@@ -35,6 +46,14 @@ func DeletePost(postID, userID int) error {
 	err = tx.Commit()
 	if err != nil {
 		return err
+	}
+
+	// Delete the image file from the server
+	if imagePath != "" {
+		err = os.Remove(filepath.Join("../client/uploads", imagePath))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

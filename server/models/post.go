@@ -15,6 +15,7 @@ type PostHome struct {
 	Title        string   `json:"title"`
 	Body         string   `json:"body"`
 	CreationDate string   `json:"creationdate"`
+	Image        string   `json:"image"`
 	Author       string   `json:"author"`
 	Categories   []string `json:"categories"`
 	Likes        int      `json:"likes"`

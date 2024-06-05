@@ -56,6 +56,7 @@ func main() {
 	r.Handle("/js/", http.FileServer(http.Dir("../client")))
 	r.Handle("/css/", http.FileServer(http.Dir("../client")))
 	r.Handle("/assets/", http.FileServer(http.Dir("../client")))
+	r.Handle("/uploads/", http.FileServer(http.Dir("../client")))
 
 	fmt.Println("Server is running on http://localhost:8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {

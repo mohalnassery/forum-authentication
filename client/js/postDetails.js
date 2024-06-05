@@ -56,8 +56,7 @@ function enableInteractions() {
         .replaceAll("<div>", "\n")
         .replaceAll("</div>", "")
         .replaceAll("<br>", "\n")
-        .replaceAll("&nbsp;"," ")
-        .length;
+        .replaceAll("&nbsp;", " ").length;
 
     charCount.textContent = remainingChars + "/" + maxCharacters;
     submitCommentBtn.disabled = remainingChars < 0;
@@ -136,6 +135,16 @@ function displayPostDetails(post) {
       tag.textContent = category;
       tagsContainer.appendChild(tag);
     });
+  }
+  // Display the associated image
+  const postImage = document.getElementById("post-image");
+  if (post.image) {
+    // Construct the correct image URL
+    const imageUrl = `/uploads/${post.image}`;
+    postImage.src = imageUrl;
+    postImage.style.display = "block";
+  } else {
+    postImage.style.display = "none";
   }
 
   if (post.isAuthor) {
@@ -258,16 +267,16 @@ function displayComments(comments) {
 
 async function submitComment() {
   const commentInput = document.getElementById("comment-input");
-  const errorMsg = document.getElementById("error")
+  const errorMsg = document.getElementById("error");
   const commentText = commentInput.innerHTML
     .replaceAll("<div><br></div>", "\n")
     .replaceAll("<div>", "\n")
     .replaceAll("</div>", "")
     .replaceAll("<br>", "\n")
-    .replaceAll("&nbsp;"," ")
+    .replaceAll("&nbsp;", " ")
     .trim();
   if (commentText !== "") {
-    errorMsg.innerText = ""
+    errorMsg.innerText = "";
     const postId = getPostIdFromURL();
     try {
       const response = await fetch(`/posts/${postId}/comments`, {
@@ -291,7 +300,7 @@ async function submitComment() {
       console.error("Error submitting comment:", error);
     }
   } else {
-    errorMsg.innerText = "Comment can not be empty"
+    errorMsg.innerText = "Comment can not be empty";
   }
 }
 

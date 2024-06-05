@@ -23,7 +23,7 @@
           <textarea id="body-content" name="message" required>{{if .Body}}{{.Body}}{{end}}</textarea><br />
         </div>
 
-        <!-- image -->
+        <!-- Add image upload field -->
         <div>
           <label for="image" class="input-label">Image:</label>
           <p class="details">Select an image to include in your post (max 20 MB)</p>
@@ -32,7 +32,6 @@
 
         <div class="tags" id="categories">
           <label class="input-label">Tags:</label>
-          <!-- <p class="details">choose the tags that is relevent to your topic</p> -->
           <div class="tag-input-container"></div>
         </div>
         <div class="error-container" id="error">{{.ErrorMsg}}</div>

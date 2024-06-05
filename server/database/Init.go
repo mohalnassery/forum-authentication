@@ -64,15 +64,15 @@ func InitDatabaseTables() {
 
 func CreateAllTables(db *sql.DB) error {
 	sqlTable := `
-	CREATE TABLE IF NOT EXISTS posts (
-		post_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		title TEXT NOT NULL,
-		body TEXT NOT NULL,
-		image TEXT,
-		creation_date DATE NOT NULL,
-		author INTEGER,
-		FOREIGN KEY (author) REFERENCES users(id) ON DELETE CASCADE
-	);
+		CREATE TABLE IF NOT EXISTS posts (
+			post_id INTEGER PRIMARY KEY AUTOINCREMENT,
+			title TEXT NOT NULL,
+			body TEXT NOT NULL,
+			image TEXT,
+			creation_date DATE NOT NULL,
+			author INTEGER,
+			FOREIGN KEY (author) REFERENCES users(id) ON DELETE CASCADE
+		);
 
 	
 

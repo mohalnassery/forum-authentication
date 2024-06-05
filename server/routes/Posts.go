@@ -18,8 +18,8 @@ import (
 )
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-	// Parse the form data
-	err := r.ParseForm()
+	// Parse the multipart form data
+	err := r.ParseMultipartForm(20 << 20) // 20 MB max file size
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -31,25 +31,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	// Get the form values for categories
 	categories := r.Form["options"]
-	if len(title) == 0 || len(body) == 0 {
-		CreatePostTemplate(w, models.PostCreate{
-			Title:      title,
-			Body:       body,
-			Image:      "",
-			ErrorMsg:   "Empty Title/Body",
-			Categories: categories,
-		})
-		return
-	}
-	if len(categories) == 0 {
-		CreatePostTemplate(w, models.PostCreate{
-			Title:      title,
-			Body:       body,
-			ErrorMsg:   "No Categories Selected",
-			Categories: categories,
-		})
-		return
-	}
 
 	// Get the user from the session
 	user, err := GetSessionUser(r)
@@ -65,14 +46,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// IMAGE UPLOAD
-	// Parse the multipart form data
-	err = r.ParseMultipartForm(20 << 20) // 20 MB max file size
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	// Get the image file from the form data
 	file, header, err := r.FormFile("image")
 	if err != nil && err != http.ErrMissingFile {
@@ -81,11 +54,23 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var imagePath string
+	var filename string
 	if file != nil {
+		// Validate the file type
+		allowedTypes := map[string]bool{
+			"image/jpeg": true,
+			"image/png":  true,
+			"image/gif":  true,
+		}
+		if !allowedTypes[header.Header.Get("Content-Type")] {
+			http.Error(w, "Invalid file type. Only JPEG, PNG, and GIF are allowed.", http.StatusBadRequest)
+			return
+		}
+
 		// Generate a unique filename for the uploaded image
 		ext := filepath.Ext(header.Filename)
-		filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-		imagePath = filepath.Join("uploads", filename)
+		filename = fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+		imagePath = filepath.Join("../client/uploads", filename)
 
 		// Save the uploaded image file
 		dst, err := os.Create(imagePath)
@@ -109,16 +94,16 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		CreationDate: time.Now().Format(time.RFC3339),
 		AuthorID:     userID,
 		Categories:   categories,
-		Image:        imagePath,
+		Image:        filename,
 	}
 
 	err = database.InsertPost(post)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// Respond to the client
+
+	// Redirect to the main page after successfully creating a post
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -255,6 +240,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 			posts.title, 
 			posts.body, 
 			posts.creation_date,
+			posts.image,
 			users.username,
 			GROUP_CONCAT(DISTINCT categories.name) AS categories,
 			(SELECT COUNT(*) FROM "like-posts" WHERE "like-posts".postID = posts.post_id) AS likes,
@@ -274,6 +260,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 		&post.Title,
 		&post.Body,
 		&post.CreationDate,
+		&post.Image,
 		&post.Author,
 		&categoriesString,
 		&post.Likes,
