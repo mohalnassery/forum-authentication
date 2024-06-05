@@ -59,13 +59,13 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser != nil {
-		// Check if the existing user's auth type matches the current login platform
-		if existingUser.AuthType != "google" {
-			// Display an error message to the user
-			errorMessage := "Login failed. There is already an email registered with another platform."
-			http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
-			return
-		}
+		// // Check if the existing user's auth type matches the current login platform
+		// if existingUser.AuthType != "google" {
+		// 	// Display an error message to the user
+		// 	errorMessage := "Login failed. There is already an email registered with another platform."
+		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
+		// 	return
+		// }
 		// User already exists, perform login
 		err = CreateSession(w, r, models.UserRegisteration{
 			Username: existingUser.Username,
