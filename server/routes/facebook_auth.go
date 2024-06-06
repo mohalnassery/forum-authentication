@@ -29,9 +29,8 @@ func FacebookLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func FacebookCallback(w http.ResponseWriter, r *http.Request) {
-	oauthState, _ := r.Cookie("oauthstate")
-
-	if r.FormValue("state") != oauthState.Value {
+	oauthState, err := r.Cookie("oauthstate")
+	if err != nil || r.FormValue("state") != oauthState.Value {
 		fmt.Println("invalid oauth state")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
@@ -44,7 +43,6 @@ func FacebookCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the access token to make API requests to Facebook
 	client := &http.Client{}
 	res, err := client.Get("https://graph.facebook.com/me?fields=id,name,email&access_token=" + token.AccessToken)
 	if err != nil {
@@ -54,7 +52,6 @@ func FacebookCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	defer res.Body.Close()
 
-	// Extract the user information from the response
 	var user struct {
 		ID    string `json:"id"`
 		Name  string `json:"name"`
@@ -67,7 +64,10 @@ func FacebookCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the user already exists in the database
+	// Validate and sanitize user data
+	user.Name = sanitizeInput(user.Name)
+	user.Email = sanitizeInput(user.Email)
+
 	existingUser, err := database.GetUserByEmail(user.Email)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -76,15 +76,6 @@ func FacebookCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser != nil {
-		// // Check if the existing user's auth type matches the current login platform
-		// if existingUser.AuthType != "facebook" {
-		// 	// Display an error message to the user
-		// 	errorMessage := "Login failed. There is already an email registered with another platform."
-		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
-		// 	return
-		// }
-
-		// User already exists, perform login
 		err = CreateSession(w, r, models.UserRegisteration{
 			Username: existingUser.Username,
 		})
@@ -92,7 +83,6 @@ func FacebookCallback(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err.Error())
 		}
 	} else {
-		// User doesn't exist, perform registration
 		newUser := &models.UserRegisteration{
 			Username: user.Name,
 			Email:    user.Email,

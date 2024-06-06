@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"forum/database"
 	"forum/models"
+	"io"
+	"net/http"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-
-	"io"
-	"net/http"
 )
 
 var (
@@ -49,31 +48,25 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the user already exists in the database
+	// Validate and sanitize user data
+	user.Name = sanitizeInput(user.Name)
+	user.Email = sanitizeInput(user.Email)
+
 	existingUser, err := database.GetUserByEmail(user.Email)
 	if err != nil {
-		fmt.Println(err.Error()) // Log the error
+		fmt.Println(err.Error())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	if existingUser != nil {
-		// // Check if the existing user's auth type matches the current login platform
-		// if existingUser.AuthType != "google" {
-		// 	// Display an error message to the user
-		// 	errorMessage := "Login failed. There is already an email registered with another platform."
-		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
-		// 	return
-		// }
-		// User already exists, perform login
 		err = CreateSession(w, r, models.UserRegisteration{
 			Username: existingUser.Username,
 		})
 		if err != nil {
-			fmt.Println(err.Error()) // Log the error
+			fmt.Println(err.Error())
 		}
 	} else {
-		// User doesn't exist, perform registration
 		newUser := &models.UserRegisteration{
 			Username: user.Name,
 			Email:    user.Email,
@@ -81,13 +74,13 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 		}
 		err = database.InsertUser(newUser)
 		if err != nil {
-			fmt.Println(err.Error()) // Log the error
+			fmt.Println(err.Error())
 			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 			return
 		}
 		err = CreateSession(w, r, *newUser)
 		if err != nil {
-			fmt.Println(err.Error()) // Log the error
+			fmt.Println(err.Error())
 		}
 	}
 

@@ -8,6 +8,7 @@ import (
 	"forum/database"
 	"forum/models"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/google/go-github/v52/github"
@@ -31,7 +32,7 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
-	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration}
+	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration, HttpOnly: true, Secure: true}
 	http.SetCookie(w, &cookie)
 
 	return state
@@ -44,21 +45,13 @@ func GithubLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func GithubCallback(w http.ResponseWriter, r *http.Request) {
-	// Get the OAuth state from the cookie
 	oauthState, err := r.Cookie("oauthstate")
-	if err != nil {
-		fmt.Println("Missing oauth state cookie")
+	if err != nil || r.FormValue("state") != oauthState.Value {
+		fmt.Println("invalid oauth state")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	if r.FormValue("state") != oauthState.Value {
-		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthState.Value, r.FormValue("state"))
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	// Exchange the authorization code for an access token
 	code := r.FormValue("code")
 	token, err := githubOauthConfig.Exchange(context.Background(), code)
 	if err != nil {
@@ -67,10 +60,8 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create a new GitHub client using the access token
 	client := github.NewClient(oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(token)))
 
-	// Get the authenticated user's information
 	user, _, err := client.Users.Get(context.Background(), "")
 	if err != nil {
 		fmt.Println("Failed to get user info:", err)
@@ -78,8 +69,11 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the user already exists in the database
-	existingUser, err := database.GetUserByEmail(user.GetEmail())
+	// Validate and sanitize user data
+	userLogin := sanitizeInput(user.GetLogin())
+	userEmail := sanitizeInput(user.GetEmail())
+
+	existingUser, err := database.GetUserByEmail(userEmail)
 	if err != nil {
 		fmt.Println(err.Error())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -87,15 +81,6 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser != nil {
-		// // Check if the existing user's auth type matches the current login platform
-		// if existingUser.AuthType != "github" {
-		// 	// Display an error message to the user
-		// 	errorMessage := "Login failed. There is already an email registered with another platform."
-		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
-		// 	return
-		// }
-
-		// User already exists, perform login
 		err = CreateSession(w, r, models.UserRegisteration{
 			Username: existingUser.Username,
 		})
@@ -103,10 +88,9 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err.Error())
 		}
 	} else {
-		// User doesn't exist, perform registration
 		newUser := &models.UserRegisteration{
-			Username: user.GetLogin(),
-			Email:    user.GetEmail(),
+			Username: userLogin,
+			Email:    userEmail,
 			AuthType: "github",
 		}
 		err = database.InsertUser(newUser)
@@ -122,4 +106,10 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+}
+
+func sanitizeInput(input string) string {
+	// Remove any characters that are not alphanumeric, @, ., or _
+	re := regexp.MustCompile(`[^a-zA-Z0-9@._]`)
+	return re.ReplaceAllString(input, "")
 }

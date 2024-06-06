@@ -52,11 +52,11 @@
     - [ ] Validate CSRF token for comment creation requests (@Comments.go).
 
 ### Implement Secure Authentication with OAuth Providers (@google_auth.go, @github_auth.go, @facebook_auth.go)
-- [ ] Review and update the OAuth authentication flow for each provider (Google, GitHub, Facebook).
+- [X] Review and update the OAuth authentication flow for each provider (Google, GitHub, Facebook).
 - [ ] Ensure the OAuth configuration is secure and uses the appropriate scopes.
-    - [ ] Validate and sanitize the data received from the OAuth providers.
-    - [ ] Implement secure session management for OAuth-authenticated users.
-    - [ ] Generate unique session identifiers for OAuth-authenticated users.
+    - [X] Validate and sanitize the data received from the OAuth providers.
+    - [X] Implement secure session management for OAuth-authenticated users.
+    - [X] Generate unique session identifiers for OAuth-authenticated users.
 - [ ] Store the session state securely on the server-side.
     - [ ] Handle OAuth authentication errors and edge cases gracefully.
     - [ ] Display appropriate error messages to the user.
