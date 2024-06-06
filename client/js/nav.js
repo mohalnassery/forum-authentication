@@ -1,3 +1,5 @@
+import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
+
 function createNavMenu() {
   // Inject CSS styles
   const style = document.createElement("style");
@@ -27,6 +29,7 @@ function createNavMenu() {
     .notification-item {
       padding: 10px;
       border-bottom: 1px solid #ddd;
+      cursor: pointer;
     }
 
     .notification-item:last-child {
@@ -35,6 +38,17 @@ function createNavMenu() {
 
     .notification-item:hover {
       background-color: #f5f5f5;
+    }
+
+    .mark-all-read {
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      background-color: #f5f5f5;
+    }
+
+    .mark-all-read:hover {
+      background-color: #e0e0e0;
     }
   `;
   document.head.appendChild(style);
@@ -170,41 +184,6 @@ async function updateNavMenu() {
     }
   } catch (error) {
     console.error("Error updating nav menu:", error);
-  }
-}
-
-async function fetchNotifications() {
-  try {
-    const response = await fetch("/notifications");
-    if (response.ok) {
-      const notifications = await response.json();
-      displayNotifications(notifications);
-    } else {
-      console.error("Error fetching notifications:", response.status);
-      displayNotifications([]); // Display "NO NEW NOTIFICATION" if there's an error
-    }
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
-    displayNotifications([]); // Display "NO NEW NOTIFICATION" if there's an error
-  }
-}
-
-function displayNotifications(notifications) {
-  const notificationDropdown = document.querySelector(".notification-dropdown");
-  notificationDropdown.innerHTML = ""; // Clear existing notifications
-
-  if (notifications && notifications.length > 0) {
-    notifications.forEach((notification) => {
-      const notificationItem = document.createElement("div");
-      notificationItem.className = "notification-item";
-      notificationItem.textContent = notification.message;
-      notificationDropdown.appendChild(notificationItem);
-    });
-  } else {
-    const noNotifications = document.createElement("div");
-    noNotifications.className = "notification-item";
-    noNotifications.textContent = "NO NEW NOTIFICATION";
-    notificationDropdown.appendChild(noNotifications);
   }
 }
 

@@ -1,4 +1,3 @@
-// Event listener for when the document is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   // Fetch posts and display them
   fetchPosts();
@@ -14,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   createSideMenu();
   createFilterListeners();
 });
+
 window.addEventListener("resize", handleResize);
 document.addEventListener("click", handleOutsideClick);
 
@@ -28,7 +28,8 @@ window.addEventListener("loginStatusUpdate", (event) => {
   const { isLoggedIn } = event.detail;
   if (isLoggedIn) {
     username = localStorage.getItem("username");
-    document.getElementById("create-btn").style.display = "block";
+    const createBtn = document.getElementById("create-btn");
+    if (createBtn) createBtn.style.display = "block";
     document.querySelectorAll("#user-filters").forEach((element) => {
       element.style.display = "block";
     });
@@ -36,7 +37,8 @@ window.addEventListener("loginStatusUpdate", (event) => {
       element.style.display = "block";
     });
   } else {
-    document.getElementById("create-btn").style.display = "none";
+    const createBtn = document.getElementById("create-btn");
+    if (createBtn) createBtn.style.display = "none";
     document.querySelectorAll("#user-filters").forEach((element) => {
       element.style.display = "none";
     });
@@ -187,7 +189,7 @@ async function fetchAllUserStats() {
   try {
     const response = await fetch("/all-stats");
     if (!response.ok) {
-      const errorMessage = await response.text();
+      const errorMessage = await res.text();
       throw new Error(errorMessage);
     }
     const stats = await response.json();
@@ -214,7 +216,7 @@ async function fetchLeaderboard() {
   try {
     const response = await fetch("/leaderboard");
     if (!response.ok) {
-      const errorMessage = await response.text();
+      const errorMessage = await res.text();
       throw new Error(errorMessage);
     }
     const leaderboard = await response.json();
@@ -366,6 +368,7 @@ function displayPosts(posts) {
 
 function createBurgerMenu() {
   const header = document.querySelector(".header");
+  if (!header) return;
 
   const burgerMenu = document.createElement("div");
   burgerMenu.className = "burger-menu";
@@ -401,12 +404,14 @@ function createSideMenu() {
 
 function toggleSideMenu() {
   const sideMenu = document.querySelector(".side-menu");
-  sideMenu.classList.toggle("active");
+  if (sideMenu) {
+    sideMenu.classList.toggle("active");
+  }
 }
 
 function handleResize() {
   const sideMenu = document.querySelector(".side-menu");
-  if (window.innerWidth > 768) {
+  if (window.innerWidth > 768 && sideMenu) {
     sideMenu.classList.remove("active");
   }
 }
@@ -414,7 +419,7 @@ function handleResize() {
 function handleOutsideClick(event) {
   const sideMenu = document.querySelector(".side-menu");
   const burgerMenu = document.querySelector(".burger-menu");
-  if (!sideMenu.contains(event.target) && !burgerMenu.contains(event.target)) {
+  if (sideMenu && burgerMenu && !sideMenu.contains(event.target) && !burgerMenu.contains(event.target)) {
     sideMenu.classList.remove("active");
   }
 }

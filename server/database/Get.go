@@ -67,3 +67,13 @@ func GetNotifications(userID int) ([]models.Notification, error) {
 	}
 	return notifications, nil
 }
+
+func ClearNotification(notificationID int) error {
+	_, err := DB.Exec("UPDATE notifications SET is_read = TRUE WHERE id = ?", notificationID)
+	return err
+}
+
+func MarkAllNotificationsAsRead(userID int) error {
+	_, err := DB.Exec("UPDATE notifications SET is_read = TRUE WHERE user_id = ?", userID)
+	return err
+}

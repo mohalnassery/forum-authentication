@@ -83,6 +83,8 @@ func main() {
 	r.Handle("/leaderboard", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetLeaderboard)))
 	r.Handle("/comments/{commentId}", limitMiddleware(commentLimiter, http.HandlerFunc(routes.DeleteComment)))
 	r.Handle("/notifications", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetNotifications)))
+	r.Handle("/notifications/clear/{notificationId}", limitMiddleware(generalLimiter, http.HandlerFunc(routes.ClearNotification)))
+	r.Handle("/notifications/mark-all-read", limitMiddleware(generalLimiter, http.HandlerFunc(routes.MarkAllNotificationsAsRead)))
 
 	// Serving static files
 	r.Handle("/js/", http.FileServer(http.Dir("../client")))

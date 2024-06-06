@@ -118,6 +118,7 @@ function displayPostDetails(post) {
   document.getElementById("post-dislikes").textContent = post.dislikes;
   const likeButton = document.getElementById("like-btn");
   const dislikeButton = document.getElementById("dislike-btn");
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   if (isLoggedIn) {
     likeButton.classList.toggle("liked", post.userLiked);
     dislikeButton.classList.toggle("disliked", post.userDisliked);
@@ -208,6 +209,7 @@ function displayComments(comments) {
       likeButton.id = `like-comment-${comment.id}`;
       likeButton.className = "fa-solid fa-thumbs-up";
       likeButton.addEventListener("click", () => likeComment(comment.id));
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
       if (isLoggedIn) {
         likeButton.disabled = false;
         likeButton.classList.remove("disabled-button");
@@ -305,6 +307,7 @@ async function submitComment() {
 }
 
 async function likePost() {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   if (!isLoggedIn) {
     console.log("User is not logged in. Cannot like post.");
     return;
@@ -329,6 +332,7 @@ async function likePost() {
 }
 
 async function dislikePost() {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   if (!isLoggedIn) {
     console.log("User is not logged in. Cannot dislike post.");
     return;
@@ -353,6 +357,7 @@ async function dislikePost() {
 }
 
 async function likeComment(commentId) {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   if (!isLoggedIn) {
     console.log("User is not logged in. Cannot like comment.");
     return;
@@ -375,6 +380,7 @@ async function likeComment(commentId) {
 }
 
 async function dislikeComment(commentId) {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   if (!isLoggedIn) {
     console.log("User is not logged in. Cannot dislike comment.");
     return;
