@@ -58,6 +58,7 @@
     - [X] Implement secure session management for OAuth-authenticated users.
     - [X] Generate unique session identifiers for OAuth-authenticated users.
 - [ ] Store the session state securely on the server-side.
+    - [ ] Save it to the DB.
     - [ ] Handle OAuth authentication errors and edge cases gracefully.
     - [ ] Display appropriate error messages to the user.
     - [ ] Log and monitor OAuth authentication failures for potential security issues.

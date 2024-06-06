@@ -3,9 +3,11 @@ package routes
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"forum/database"
 	"forum/models"
 	"net/http"
 	"time"
@@ -25,6 +27,12 @@ type SessionData struct {
 }
 
 func CreateSession(w http.ResponseWriter, r *http.Request, user models.UserRegisteration) error {
+	// Invalidate any existing session for the user
+	_, err := database.DB.Exec("DELETE FROM sessions WHERE username = ?", user.Username)
+	if err != nil {
+		return err
+	}
+
 	sessionID := generateSessionID()
 	expirationTime := time.Now().Add(24 * time.Hour) // Set session expiration to 24 hours
 
@@ -41,6 +49,12 @@ func CreateSession(w http.ResponseWriter, r *http.Request, user models.UserRegis
 
 	encodedSession := encodeSession(sessionJSON)
 
+	// Store session in the database
+	_, err = database.DB.Exec("INSERT INTO sessions (session_id, username, expires_at) VALUES (?, ?, ?)", sessionID, user.Username, expirationTime)
+	if err != nil {
+		return err
+	}
+
 	cookie := &http.Cookie{
 		Name:     sessionCookieName,
 		Value:    encodedSession,
@@ -51,9 +65,6 @@ func CreateSession(w http.ResponseWriter, r *http.Request, user models.UserRegis
 	}
 
 	http.SetCookie(w, cookie)
-
-	// Store the session ID in the UserSessions map
-	UserSessions[user.Username] = sessionID
 
 	return nil
 }
@@ -81,42 +92,41 @@ func GetSessionUser(r *http.Request) (*models.UserRegisteration, error) {
 		return nil, errors.New("session has expired")
 	}
 
-	// Check if map has changed
-	if sessionData.SessionID != UserSessions[sessionData.User.Username] {
-		return &sessionData.User, errors.New("newer session found")
+	// Check if the session is still valid in the database
+	var dbSessionID string
+	err = database.DB.QueryRow("SELECT session_id FROM sessions WHERE session_id = ? AND username = ?", sessionData.SessionID, sessionData.User.Username).Scan(&dbSessionID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			DestroySession(nil, r) // Destroy the session if it is no longer valid
+			return nil, errors.New("session is no longer valid")
+		}
+		return nil, err
 	}
 
 	return &sessionData.User, nil
 }
 
-func DestroySession(w http.ResponseWriter, r *http.Request) error {
-	cookie := &http.Cookie{
-		Name:     sessionCookieName,
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true, // Set to true in production
-		MaxAge:   -1,
+func DestroySession(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie(sessionCookieName)
+	if err != nil {
+		return
 	}
 
-	http.SetCookie(w, cookie)
+	// Invalidate the session
+	delete(UserSessions, cookie.Value)
 
-	// Remove the session from the UserSessions map
-	if r != nil {
-		cookie, err := r.Cookie(sessionCookieName)
-		if err == nil {
-			decodedSession, err := decodeSession(cookie.Value)
-			if err == nil {
-				var sessionData SessionData
-				err = json.Unmarshal(decodedSession, &sessionData)
-				if err == nil {
-					delete(UserSessions, sessionData.User.Username)
-				}
-			}
+	// Set the cookie to expire
+	if w != nil {
+		cookie = &http.Cookie{
+			Name:     sessionCookieName,
+			Value:    "",
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true, // Set to true in production
+			MaxAge:   -1,
 		}
+		http.SetCookie(w, cookie)
 	}
-
-	return nil
 }
 
 func encodeSession(data []byte) string {

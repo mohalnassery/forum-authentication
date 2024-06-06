@@ -78,7 +78,7 @@ func CreateAllTables(db *sql.DB) error {
 
 		CREATE TABLE IF NOT EXISTS users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
+			username TEXT NOT NULL UNIQUE,
 			email TEXT NOT NULL,
 			password TEXT,
 			auth_type TEXT NOT NULL
@@ -145,6 +145,13 @@ func CreateAllTables(db *sql.DB) error {
 			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
 			FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 		);
+		CREATE TABLE IF NOT EXISTS sessions (
+			session_id TEXT PRIMARY KEY,
+			username TEXT,
+			expires_at DATETIME,
+			FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+		);
+
 	`
 	_, err := db.Exec(sqlTable)
 	if err != nil {

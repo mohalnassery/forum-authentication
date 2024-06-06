@@ -260,7 +260,7 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 		&post.Title,
 		&post.Body,
 		&post.CreationDate,
-		&post.Image,
+		&post.Image, // Retrieve the image as sql.NullString
 		&post.Author,
 		&categoriesString,
 		&post.Likes,

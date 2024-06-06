@@ -19,10 +19,10 @@ func main() {
 	r := http.NewServeMux()
 
 	// Create rate limiters for different routes
-	generalLimiter := rate.NewLimiter(rate.Every(time.Minute), 100) // 100 requests per minute
+	generalLimiter := rate.NewLimiter(rate.Every(time.Minute), 500) // 500 requests per minute
 	authLimiter := rate.NewLimiter(rate.Every(time.Second), 5)      // 5 requests per second
-	postLimiter := rate.NewLimiter(rate.Every(time.Minute), 60)     // 60 requests per minute
-	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 30)  // 30 requests per minute
+	postLimiter := rate.NewLimiter(rate.Every(time.Minute), 500)    // 500 requests per minute
+	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 200) // 30 requests per minute
 
 	// Displaying pages
 	r.Handle("/", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))

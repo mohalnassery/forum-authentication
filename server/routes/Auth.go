@@ -90,6 +90,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "User logged in successfully")
 }
+
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	user, err := GetSessionUser(r)
 	if err != nil {
@@ -113,12 +114,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		delete(UserSessions, user.Username)
 	}
-
-	err = DestroySession(w, r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprintf(w, "Logged out successfully")
+	DestroySession(w, r)
+	json.NewEncoder(w).Encode(map[string]string{"status": "logged_out"})
 }
