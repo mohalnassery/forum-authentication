@@ -7,7 +7,6 @@ import (
 	"forum/database"
 	"forum/models"
 	"net/http"
-	"net/url"
 
 	"golang.org/x/oauth2"
 	facebookOAuth "golang.org/x/oauth2/facebook"
@@ -17,7 +16,7 @@ var (
 	facebookOauthConfig = &oauth2.Config{
 		ClientID:     "1531896514060809",
 		ClientSecret: "1022032e6c06c90bfa49f26307c476e4",
-		RedirectURL:  "http://localhost:8080/auth/facebook/callback",
+		RedirectURL:  "https://localhost:8443/auth/facebook/callback",
 		Scopes:       []string{"email"},
 		Endpoint:     facebookOAuth.Endpoint,
 	}
@@ -77,13 +76,13 @@ func FacebookCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser != nil {
-		// Check if the existing user's auth type matches the current login platform
-		if existingUser.AuthType != "facebook" {
-			// Display an error message to the user
-			errorMessage := "Login failed. There is already an email registered with another platform."
-			http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
-			return
-		}
+		// // Check if the existing user's auth type matches the current login platform
+		// if existingUser.AuthType != "facebook" {
+		// 	// Display an error message to the user
+		// 	errorMessage := "Login failed. There is already an email registered with another platform."
+		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
+		// 	return
+		// }
 
 		// User already exists, perform login
 		err = CreateSession(w, r, models.UserRegisteration{

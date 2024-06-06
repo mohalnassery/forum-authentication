@@ -18,50 +18,71 @@ func main() {
 
 	r := http.NewServeMux()
 
-	// Create a rate limiter with a maximum of 100 requests per minute
-	limiter := rate.NewLimiter(rate.Every(time.Minute), 100)
+	// Create rate limiters for different routes
+	generalLimiter := rate.NewLimiter(rate.Every(time.Minute), 100) // 100 requests per minute
+	authLimiter := rate.NewLimiter(rate.Every(time.Second), 5)      // 5 requests per second
+	postLimiter := rate.NewLimiter(rate.Every(time.Minute), 60)     // 60 requests per minute
+	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 30)  // 30 requests per minute
 
-	http.Handle("/", limitMiddleware(limiter, r))
-
-	// displaying pages
-	r.HandleFunc("/", routes.HandleGet)
-	r.HandleFunc("/register", routes.HandleGet)
-	r.HandleFunc("/login", routes.HandleGet)
-	r.HandleFunc("/create", routes.HandleGet)
-	r.HandleFunc("/post-details/{postId}", routes.HandleGet)
+	// Displaying pages
+	r.Handle("/", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
+	r.Handle("/register", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
+	r.Handle("/login", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
+	r.Handle("/create", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
+	r.Handle("/post-details/{postId}", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
 	r.Handle("/favicon.ico", http.FileServer(http.Dir("../client/assets")))
-	// google auth end points
-	r.HandleFunc("/auth/google", routes.GoogleLogin)
-	r.HandleFunc("/auth/google/callback", routes.GoogleCallback)
-	// github auth end points
-	r.HandleFunc("/auth/github/login", routes.GithubLogin)
-	r.HandleFunc("/auth/github/callback", routes.GithubCallback)
-	// facebook auth end points
-	r.HandleFunc("/auth/facebook/login", routes.FacebookLogin)
-	r.HandleFunc("/auth/facebook/callback", routes.FacebookCallback)
 
-	// functionality end points (NOTE: USING GO VERSION 1.22 FOR BETTER ROUTING)
-	r.HandleFunc("/categories", routes.GetCategories)
-	r.HandleFunc("POST /auth/register", routes.UserRegister)
-	r.HandleFunc("POST /auth/login", routes.UserLogin)
-	r.HandleFunc("POST /posts", routes.CreatePost)
-	r.HandleFunc("GET /posts", routes.GetPosts)
-	r.HandleFunc("GET /posts/{postId}", routes.GetPost)
+	// Google auth endpoints
+	r.Handle("/auth/google", limitMiddleware(authLimiter, http.HandlerFunc(routes.GoogleLogin)))
+	r.Handle("/auth/google/callback", limitMiddleware(authLimiter, http.HandlerFunc(routes.GoogleCallback)))
 
-	r.HandleFunc("POST /posts/{postId}/like", routes.LikePost)
-	r.HandleFunc("POST /posts/{postId}/dislike", routes.DislikePost)
-	r.HandleFunc("POST /posts/{postId}/comments", routes.CreateComment)
-	r.HandleFunc("POST /comments/{commentId}/like", routes.LikeComment)
-	r.HandleFunc("POST /comments/{commentId}/dislike", routes.DislikeComment)
+	// GitHub auth endpoints
+	r.Handle("/auth/github/login", limitMiddleware(authLimiter, http.HandlerFunc(routes.GithubLogin)))
+	r.Handle("/auth/github/callback", limitMiddleware(authLimiter, http.HandlerFunc(routes.GithubCallback)))
 
-	r.HandleFunc("/auth/is-logged-in", routes.IsLoggedIn)
-	r.HandleFunc("POST /auth/logout", routes.Logout)
-	r.HandleFunc("GET /user-stats", routes.GetUserStats)
-	r.HandleFunc("GET /all-stats", routes.GetAllStats)
-	r.HandleFunc("GET /leaderboard", routes.GetLeaderboard)
-	r.HandleFunc("DELETE /posts/{postId}", routes.DeletePost)
-	r.HandleFunc("DELETE /comments/{commentId}", routes.DeleteComment)
-	// serving static files
+	// Facebook auth endpoints
+	r.Handle("/auth/facebook/login", limitMiddleware(authLimiter, http.HandlerFunc(routes.FacebookLogin)))
+	r.Handle("/auth/facebook/callback", limitMiddleware(authLimiter, http.HandlerFunc(routes.FacebookCallback)))
+
+	// Functionality endpoints
+	r.Handle("/categories", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetCategories)))
+	r.Handle("/auth/register", limitMiddleware(authLimiter, http.HandlerFunc(routes.UserRegister)))
+	r.Handle("/auth/login", limitMiddleware(authLimiter, http.HandlerFunc(routes.UserLogin)))
+	r.Handle("/posts", limitMiddleware(postLimiter, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			routes.CreatePost(w, r)
+		case http.MethodGet:
+			routes.GetPosts(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
+	r.Handle("/posts/{postId}", limitMiddleware(generalLimiter, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			routes.GetPost(w, r)
+		case http.MethodDelete:
+			routes.DeletePost(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
+	r.Handle("/posts/{postId}/like", limitMiddleware(postLimiter, http.HandlerFunc(routes.LikePost)))
+	r.Handle("/posts/{postId}/dislike", limitMiddleware(postLimiter, http.HandlerFunc(routes.DislikePost)))
+	r.Handle("/posts/{postId}/comments", limitMiddleware(commentLimiter, http.HandlerFunc(routes.CreateComment)))
+	r.Handle("/comments/{commentId}/like", limitMiddleware(commentLimiter, http.HandlerFunc(routes.LikeComment)))
+	r.Handle("/comments/{commentId}/dislike", limitMiddleware(commentLimiter, http.HandlerFunc(routes.DislikeComment)))
+	r.Handle("/auth/is-logged-in", limitMiddleware(authLimiter, http.HandlerFunc(routes.IsLoggedIn)))
+	r.Handle("/auth/logout", limitMiddleware(authLimiter, http.HandlerFunc(routes.Logout)))
+	r.Handle("/user-stats", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetUserStats)))
+	r.Handle("/all-stats", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetAllStats)))
+	r.Handle("/leaderboard", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetLeaderboard)))
+	r.Handle("/comments/{commentId}", limitMiddleware(commentLimiter, http.HandlerFunc(routes.DeleteComment)))
+
+	// Serving static files
 	r.Handle("/js/", http.FileServer(http.Dir("../client")))
 	r.Handle("/css/", http.FileServer(http.Dir("../client")))
 	r.Handle("/assets/", http.FileServer(http.Dir("../client")))

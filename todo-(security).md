@@ -2,43 +2,43 @@
 ## Forum Authentication - Todo List
 
 ### SSL Certificate Generation and Configuration (@main.go)
-- [ ] Generate an SSL certificate for HTTPS communication.
-    - [ ] Choose between creating your own certificates or using a Certificate Authority (CA).
-    - [ ] Ensure the certificate is properly configured and valid.
-- [ ] Configure the server to use HTTPS with the generated SSL certificate.
-    - [ ] Update the server configuration to listen on the HTTPS port (e.g., 443).
-    - [ ] Specify the paths to the SSL certificate and private key files.
+- [X] Generate an SSL certificate for HTTPS communication.
+    - [X] Choose between creating your own certificates or using a Certificate Authority (CA).
+    - [X] Ensure the certificate is properly configured and valid.
+- [X] Configure the server to use HTTPS with the generated SSL certificate.
+    - [X] Update the server configuration to listen on the HTTPS port (e.g., 443).
+    - [X] Specify the paths to the SSL certificate and private key files.
 
 ### Implement Rate Limiting (@main.go, @Auth.go, @Posts.go, @Comments.go)
-- [ ] Research and choose a suitable rate limiting library or implement custom rate limiting middleware.
-- [ ] Define rate limiting rules for different endpoints or actions.
-    - [ ] Set appropriate rate limits for authentication endpoints (@Auth.go).
-    - [ ] Set rate limits for creating posts (@Posts.go).
-    - [ ] Set rate limits for creating comments (@Comments.go).
-- [ ] Integrate the rate limiting middleware into the server configuration (@main.go).
-- [ ] Test the rate limiting functionality to ensure it effectively prevents abuse and excessive requests.
+- [X] Research and choose a suitable rate limiting library or implement custom rate limiting middleware.
+- [X] Define rate limiting rules for different endpoints or actions.
+    - [X] Set appropriate rate limits for authentication endpoints (@Auth.go).
+    - [X] Set rate limits for creating posts (@Posts.go).
+    - [X] Set rate limits for creating comments (@Comments.go).
+- [X] Integrate the rate limiting middleware into the server configuration (@main.go).
+- [X] Test the rate limiting functionality to ensure it effectively prevents abuse and excessive requests.
 
 ### Password Encryption (@Insert.go, @Verify.go)
-- [ ] Research and choose a secure password hashing algorithm (e.g., bcrypt, scrypt, PBKDF2).
-- [ ] Update the user registration process to hash the password before storing it in the database (@Insert.go).
-    - [ ] Generate a random salt for each password.
-    - [ ] Combine the password and salt and hash them using the chosen algorithm.
-    - [ ] Store the hashed password and salt in the database.
-- [ ] Update the user login process to compare the provided password with the stored hashed password (@Verify.go).
-    - [ ] Retrieve the stored hashed password and salt from the database.
-    - [ ] Hash the provided password with the retrieved salt using the same algorithm.
-    - [ ] Compare the resulting hash with the stored hashed password.
+- [X] Research and choose a secure password hashing algorithm (e.g., bcrypt, scrypt, PBKDF2).
+- [X] Update the user registration process to hash the password before storing it in the database (@Insert.go).
+    - [X] Generate a random salt for each password.
+    - [X] Combine the password and salt and hash them using the chosen algorithm.
+    - [X] Store the hashed password and salt in the database.
+- [X] Update the user login process to compare the provided password with the stored hashed password (@Verify.go).
+    - [X] Retrieve the stored hashed password and salt from the database.
+    - [X] Hash the provided password with the retrieved salt using the same algorithm.
+    - [X] Compare the resulting hash with the stored hashed password.
 
 ### Implement Secure Session Management (@session.go)
-- [ ] Generate unique session identifiers using a secure random number generator (e.g., UUID).
-- [ ] Store session state on the server-side, associating it with the unique session identifier.
-- [ ] Implement session creation and destruction functions.
-    - [ ] Create a new session upon successful user authentication.
-    - [ ] Destroy the session when the user logs out or the session expires.
-- [ ] Set secure session cookies with appropriate attributes (e.g., HttpOnly, Secure, SameSite).
-- [ ] Implement session validation and expiration checks.
-    - [ ] Validate the session identifier on each request.
-    - [ ] Check if the session has expired and destroy it if necessary.
+- [X] Generate unique session identifiers using a secure random number generator (e.g., UUID).
+- [X] Store session state on the server-side, associating it with the unique session identifier.
+- [X] Implement session creation and destruction functions.
+    - [X] Create a new session upon successful user authentication.
+    - [X] Destroy the session when the user logs out or the session expires.
+- [X] Set secure session cookies with appropriate attributes (e.g., HttpOnly, Secure, SameSite).
+- [X] Implement session validation and expiration checks.
+    - [X] Validate the session identifier on each request.
+    - [X] Check if the session has expired and destroy it if necessary.
 
 ### Implement CSRF Protection (@session.go, @Auth.go, @Posts.go, @Comments.go)
 - [ ] Generate unique CSRF tokens for each session.

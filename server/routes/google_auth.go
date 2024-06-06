@@ -12,14 +12,13 @@ import (
 
 	"io"
 	"net/http"
-	"net/url"
 )
 
 var (
 	googleOauthConfig = &oauth2.Config{
 		ClientID:     "632453699826-cahu1ldajpebroq35vb25v9v1n4r4vk0.apps.googleusercontent.com",
 		ClientSecret: "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",
-		RedirectURL:  "http://localhost:8080/auth/google/callback",
+		RedirectURL:  "https://localhost:8443/auth/google/callback",
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",
 			"https://www.googleapis.com/auth/userinfo.profile",
@@ -59,13 +58,13 @@ func GoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser != nil {
-		// Check if the existing user's auth type matches the current login platform
-		if existingUser.AuthType != "google" {
-			// Display an error message to the user
-			errorMessage := "Login failed. There is already an email registered with another platform."
-			http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
-			return
-		}
+		// // Check if the existing user's auth type matches the current login platform
+		// if existingUser.AuthType != "google" {
+		// 	// Display an error message to the user
+		// 	errorMessage := "Login failed. There is already an email registered with another platform."
+		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
+		// 	return
+		// }
 		// User already exists, perform login
 		err = CreateSession(w, r, models.UserRegisteration{
 			Username: existingUser.Username,

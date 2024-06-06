@@ -1,5 +1,7 @@
 package models
 
+import "database/sql"
+
 type Post struct {
 	Title        string   `json:"title"`
 	Body         string   `json:"body"`
@@ -11,19 +13,19 @@ type Post struct {
 }
 
 type PostHome struct {
-	PostID       int      `json:"post_id"`
-	Title        string   `json:"title"`
-	Body         string   `json:"body"`
-	CreationDate string   `json:"creationdate"`
-	Image        string   `json:"image"`
-	Author       string   `json:"author"`
-	Categories   []string `json:"categories"`
-	Likes        int      `json:"likes"`
-	Dislikes     int      `json:"dislikes"`
-	CommentCount int      `json:"commentCount"`
-	UserLiked    bool     `json:"userLiked"`
-	UserDisliked bool     `json:"userDisliked"`
-	IsAuthor     bool     `json:"isAuthor"`
+	PostID       int            `json:"post_id"`
+	Title        string         `json:"title"`
+	Body         string         `json:"body"`
+	CreationDate string         `json:"creationdate"`
+	Image        sql.NullString `json:"image"`
+	Author       string         `json:"author"`
+	Categories   []string       `json:"categories"`
+	Likes        int            `json:"likes"`
+	Dislikes     int            `json:"dislikes"`
+	CommentCount int            `json:"commentCount"`
+	UserLiked    bool           `json:"userLiked"`
+	UserDisliked bool           `json:"userDisliked"`
+	IsAuthor     bool           `json:"isAuthor"`
 }
 
 type PostCreate struct {

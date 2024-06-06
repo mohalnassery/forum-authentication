@@ -21,13 +21,17 @@ var UserSessions = make(map[string]string) //Key: sessionID, Value User
 type SessionData struct {
 	User      models.UserRegisteration `json:"user"`
 	SessionID string                   `json:"sessionID"`
+	ExpiresAt time.Time                `json:"expiresAt"`
 }
 
 func CreateSession(w http.ResponseWriter, r *http.Request, user models.UserRegisteration) error {
 	sessionID := generateSessionID()
+	expirationTime := time.Now().Add(24 * time.Hour) // Set session expiration to 24 hours
+
 	sessionData := &SessionData{
 		User:      user,
 		SessionID: sessionID,
+		ExpiresAt: expirationTime,
 	}
 
 	sessionJSON, err := json.Marshal(sessionData)
@@ -71,6 +75,12 @@ func GetSessionUser(r *http.Request) (*models.UserRegisteration, error) {
 		return nil, err
 	}
 
+	// Check if the session has expired
+	if time.Now().After(sessionData.ExpiresAt) {
+		DestroySession(nil, r) // Destroy the session if it has expired
+		return nil, errors.New("session has expired")
+	}
+
 	// Check if map has changed
 	if sessionData.SessionID != UserSessions[sessionData.User.Username] {
 		return &sessionData.User, errors.New("newer session found")
@@ -90,6 +100,22 @@ func DestroySession(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	http.SetCookie(w, cookie)
+
+	// Remove the session from the UserSessions map
+	if r != nil {
+		cookie, err := r.Cookie(sessionCookieName)
+		if err == nil {
+			decodedSession, err := decodeSession(cookie.Value)
+			if err == nil {
+				var sessionData SessionData
+				err = json.Unmarshal(decodedSession, &sessionData)
+				if err == nil {
+					delete(UserSessions, sessionData.User.Username)
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -142,7 +168,6 @@ func generateSessionID() string {
 	// Generate a new UUID
 	sessionID, err := uuid.NewV4()
 	if err != nil {
-
 		return "default-session-id"
 	}
 

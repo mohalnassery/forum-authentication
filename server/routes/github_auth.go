@@ -8,7 +8,6 @@ import (
 	"forum/database"
 	"forum/models"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/google/go-github/v52/github"
@@ -20,7 +19,7 @@ var (
 	githubOauthConfig = &oauth2.Config{
 		ClientID:     "Ov23liAQ6ck4v8pHIbG0",
 		ClientSecret: "7760bf27f11f1df3008dc854cd9385f8899e95b4",
-		RedirectURL:  "http://localhost:8080/auth/github/callback",
+		RedirectURL:  "https://localhost:8443/auth/github/callback",
 		Scopes:       []string{"user:email"},
 		Endpoint:     githubOAuth.Endpoint,
 	}
@@ -88,13 +87,13 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser != nil {
-		// Check if the existing user's auth type matches the current login platform
-		if existingUser.AuthType != "github" {
-			// Display an error message to the user
-			errorMessage := "Login failed. There is already an email registered with another platform."
-			http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
-			return
-		}
+		// // Check if the existing user's auth type matches the current login platform
+		// if existingUser.AuthType != "github" {
+		// 	// Display an error message to the user
+		// 	errorMessage := "Login failed. There is already an email registered with another platform."
+		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
+		// 	return
+		// }
 
 		// User already exists, perform login
 		err = CreateSession(w, r, models.UserRegisteration{
