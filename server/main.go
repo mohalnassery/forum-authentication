@@ -7,6 +7,7 @@ import (
 	"forum/routes"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"golang.org/x/time/rate"
@@ -22,7 +23,7 @@ func main() {
 	generalLimiter := rate.NewLimiter(rate.Every(time.Minute), 500) // 500 requests per minute
 	authLimiter := rate.NewLimiter(rate.Every(time.Second), 5)      // 5 requests per second
 	postLimiter := rate.NewLimiter(rate.Every(time.Minute), 500)    // 500 requests per minute
-	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 200) // 30 requests per minute
+	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 200) // 200 requests per minute
 
 	// Displaying pages
 	r.Handle("/", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
@@ -101,15 +102,26 @@ func main() {
 		},
 	}
 
+	// Read certificate paths from environment variables
+	certFile := os.Getenv("TLS_CERT_FILE")
+	keyFile := os.Getenv("TLS_KEY_FILE")
+
+	if certFile == "" || keyFile == "" {
+		log.Fatal("TLS certificate and key files must be set via environment variables")
+	}
+
 	server := &http.Server{
 		Addr:         ":8443",
 		Handler:      r,
 		TLSConfig:    tlsConfig,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  15 * time.Second,
 		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler)),
 	}
 
 	fmt.Println("Server is running on https://localhost:8443")
-	if err := server.ListenAndServeTLS("../server/cert.pem", "../server/key.pem"); err != nil {
+	if err := server.ListenAndServeTLS(certFile, keyFile); err != nil {
 		log.Fatal(err)
 	}
 }

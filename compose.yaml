@@ -3,4 +3,10 @@ services:
   app:
     build: .
     ports:
-      - "8080:8080"
+      - "8443:8443"
+    environment:
+      - TLS_CERT_FILE=/server/cert.pem
+      - TLS_KEY_FILE=/server/key.pem
+    volumes:
+      - ./server/cert.pem:/server/cert.pem
+      - ./server/key.pem:/server/key.pem

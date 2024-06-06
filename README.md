@@ -47,18 +47,27 @@ The client component provides the user interface for interacting with the forum 
 
 ## Setup and Installation
 
+
+
 To run the application locally using go or docker, follow these steps:
+
+### Using Go
 
 1. Clone the repository: `git clone https://learn.reboot01.com/git/halmakan/forum.git`
 2. Navigate to the project directory: `cd forum/server`
-3. Run the go server: `go run main.go`
-4. Navigate to `http://localhost:8080` to access the application.
+3. Set the environment variables for the TLS certificate and key files:
+   ```sh
+   export TLS_CERT_FILE="../server/cert.pem"
+   export TLS_KEY_FILE="../server/key.pem"
+   ```
+4. Run the Go server: `go run main.go`
+5. Navigate to `https://localhost:8443` to access the application.
 
 ### Docker
 1. Navigate to the root directory of the project: `cd forum`
 2. Build the Docker images: `docker-compose build`
 3. Start the Docker containers: `docker-compose up`
-4. Open your web browser and visit `http://localhost:8080` to access the application.
+4. Open your web browser and visit `http://localhost:8443` to access the application.
 
 The `docker-compose.yml` file in the project root directory defines the services for the application:
 
