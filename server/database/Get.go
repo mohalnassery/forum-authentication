@@ -39,3 +39,31 @@ func GetUserByEmail(email string) (*models.UserRegisteration, error) {
 	}
 	return &user, nil
 }
+
+func GetUsernameByID(userID int) (string, error) {
+	var username string
+	err := DB.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&username)
+	if err != nil {
+		return "", err
+	}
+	return username, nil
+}
+
+func GetNotifications(userID int) ([]models.Notification, error) {
+	rows, err := DB.Query("SELECT id, message, created_at, is_read FROM notifications WHERE user_id = ? ORDER BY created_at DESC", userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notifications []models.Notification
+	for rows.Next() {
+		var notification models.Notification
+		err := rows.Scan(&notification.ID, &notification.Message, &notification.CreatedAt, &notification.IsRead)
+		if err != nil {
+			return nil, err
+		}
+		notifications = append(notifications, notification)
+	}
+	return notifications, nil
+}

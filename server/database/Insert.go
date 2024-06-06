@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"forum/models"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -72,6 +73,18 @@ func InsertComment(username string, body string, postID int) error {
 	if err != nil {
 		return err
 	}
+
+	// Create a notification for the post author
+	postAuthorID, err := GetPostAuthorID(postID)
+	if err != nil {
+		return err
+	}
+	message := fmt.Sprintf("%s commented on your post", username)
+	err = InsertNotification(postAuthorID, message)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -104,6 +117,21 @@ func InsertPostLike(postID int, userID int) error {
 
 		// Insert the like for the post by the user
 		_, err = tx.Exec(`INSERT INTO "like-posts" (postID, user_id) VALUES (?, ?)`, postID, userID)
+		if err != nil {
+			return err
+		}
+
+		// Create a notification for the post author
+		postAuthorID, err := GetPostAuthorID(postID)
+		if err != nil {
+			return err
+		}
+		username, err := GetUsernameByID(userID)
+		if err != nil {
+			return err
+		}
+		message := fmt.Sprintf("Your post was liked by %s", username)
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", postAuthorID, message)
 		if err != nil {
 			return err
 		}
@@ -149,6 +177,21 @@ func InsertPostDislike(postID int, userID int) error {
 		if err != nil {
 			return err
 		}
+
+		// Create a notification for the post author
+		postAuthorID, err := GetPostAuthorID(postID)
+		if err != nil {
+			return err
+		}
+		username, err := GetUsernameByID(userID)
+		if err != nil {
+			return err
+		}
+		message := fmt.Sprintf("Your post was disliked by %s", username)
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", postAuthorID, message)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = tx.Commit()
@@ -188,6 +231,21 @@ func InsertCommentLike(commentID, userID int) error {
 
 		// Insert the like for the comment by the user
 		_, err = tx.Exec(`INSERT INTO "like-comments" (comment_id, user_id) VALUES (?, ?)`, commentID, userID)
+		if err != nil {
+			return err
+		}
+
+		// Create a notification for the comment author
+		commentAuthorID, err := GetCommentAuthorID(commentID)
+		if err != nil {
+			return err
+		}
+		username, err := GetUsernameByID(userID)
+		if err != nil {
+			return err
+		}
+		message := fmt.Sprintf("Your comment was liked by %s", username)
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", commentAuthorID, message)
 		if err != nil {
 			return err
 		}
@@ -233,6 +291,21 @@ func InsertCommentDislike(commentID, userID int) error {
 		if err != nil {
 			return err
 		}
+
+		// Create a notification for the comment author
+		commentAuthorID, err := GetCommentAuthorID(commentID)
+		if err != nil {
+			return err
+		}
+		username, err := GetUsernameByID(userID)
+		if err != nil {
+			return err
+		}
+		message := fmt.Sprintf("Your comment was disliked by %s", username)
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", commentAuthorID, message)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = tx.Commit()
@@ -241,4 +314,21 @@ func InsertCommentDislike(commentID, userID int) error {
 	}
 
 	return nil
+}
+
+func InsertNotification(userID int, message string) error {
+	_, err := DB.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", userID, message)
+	return err
+}
+
+func GetPostAuthorID(postID int) (int, error) {
+	var authorID int
+	err := DB.QueryRow("SELECT author FROM posts WHERE post_id = ?", postID).Scan(&authorID)
+	return authorID, err
+}
+
+func GetCommentAuthorID(commentID int) (int, error) {
+	var authorID int
+	err := DB.QueryRow("SELECT author FROM comments WHERE id = ?", commentID).Scan(&authorID)
+	return authorID, err
 }

@@ -151,7 +151,14 @@ func CreateAllTables(db *sql.DB) error {
 			expires_at DATETIME,
 			FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 		);
-
+		CREATE TABLE IF NOT EXISTS notifications (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER,
+			message TEXT NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			is_read BOOLEAN DEFAULT FALSE,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+		);
 	`
 	_, err := db.Exec(sqlTable)
 	if err != nil {

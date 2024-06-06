@@ -1,11 +1,17 @@
 ## Forum Advanced Features - Todo List
 
 ### Notification System (@Index.js, @postDetails.js, @Insert.go, @Init.go)
-- [ ] Implement a notification system for user interactions.
-    - [ ] Create a new database table to store notifications (@Init.go).
-    - [ ] Modify the post liking/disliking logic to create a notification entry (@Insert.go, @Likes.go).
-    - [ ] Modify the comment creation logic to create a notification entry (@Insert.go, @Comments.go).
-    - [ ] Retrieve and display notifications on the user's profile page (@Index.js, @postDetails.js).
+- [X] Creating a notification system DB for user interactions. 
+    - [X] Create a new database table to store notifications (@Init.go).
+    - [X] Modify the post liking/disliking logic to create a notification entry (@Insert.go, @Likes.go).
+    - [X] Modify the comment creation logic to create a notification entry (@Insert.go, @Comments.go).
+- [X] Retrieve and display notifications on the user's profile page (@Index.js, @postDetails.js).
+- [ ] Implement clearing the notification when user has clicked on the notification, or when the user clicked on (mark all as read).
+    - [ ] Create a new endpoint to clear notifications (@Get.go). 
+    - [ ] Create a new endpoint to mark all notifications as read (@Get.go).
+    - [ ] Modify the notification retrieval logic to include the status of the notification (@Get.go).
+    - [ ] Adjust the frontend to handle the notification clearing and marking as read.
+
 
 ### Activity Page (@activity.html, @Activity.js, @Activity.go, @Get.go)
 - [ ] Create a new HTML page for the user activity (@activity.html).

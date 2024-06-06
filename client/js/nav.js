@@ -1,4 +1,44 @@
 function createNavMenu() {
+  // Inject CSS styles
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .notification-icon {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notification-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .notification-dropdown.show {
+      display: block;
+    }
+
+    .notification-item {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+
+    .notification-item:hover {
+      background-color: #f5f5f5;
+    }
+  `;
+  document.head.appendChild(style);
+
   const header = document.createElement("div");
   header.className = "header";
   const headerLink = document.createElement("a");
@@ -13,6 +53,34 @@ function createNavMenu() {
   headerLink.appendChild(logo);
   const userAuth = document.createElement("div");
   userAuth.className = "user-auth";
+
+  // Add bell icon for notifications (initially hidden)
+  const notificationIcon = document.createElement("div");
+  notificationIcon.className = "notification-icon";
+  notificationIcon.style.display = "none"; // Hide by default
+  const bellIcon = document.createElement("i");
+  bellIcon.className = "fa-solid fa-bell";
+  notificationIcon.appendChild(bellIcon);
+  userAuth.appendChild(notificationIcon);
+
+  // Create dropdown menu for notifications
+  const notificationDropdown = document.createElement("div");
+  notificationDropdown.className = "notification-dropdown";
+  notificationIcon.appendChild(notificationDropdown);
+
+  // Add event listener to toggle dropdown visibility
+  notificationIcon.addEventListener("click", (event) => {
+    event.stopPropagation();
+    notificationDropdown.classList.toggle("show");
+  });
+
+  // Hide the dropdown when clicking outside
+  document.addEventListener("click", (event) => {
+    if (!notificationIcon.contains(event.target)) {
+      notificationDropdown.classList.remove("show");
+    }
+  });
+
   const loginLink = document.createElement("a");
   loginLink.href = "/login";
   loginLink.className = "auth-links";
@@ -47,7 +115,9 @@ function createNavMenu() {
   header.appendChild(userAuth);
   document.body.insertBefore(header, document.body.firstChild);
 }
+
 let isLoggedIn = false; // Variable to track login status
+
 async function updateNavMenu() {
   try {
     const response = await fetch("/auth/is-logged-in");
@@ -58,15 +128,18 @@ async function updateNavMenu() {
         document.getElementById("login-btn").style.display = "none";
         document.getElementById("signup-btn").style.display = "none";
         document.getElementById("logout-btn").style.display = "inline-block";
+        document.querySelector(".notification-icon").style.display = "inline-block"; // Show bell icon
         document.getElementById("username").textContent = data.username;
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("username", data.username);
         localStorage.setItem("sessionID", data.sessionID);
+        fetchNotifications();
       } else {
         isLoggedIn = false;
         document.getElementById("login-btn").style.display = "inline-block";
         document.getElementById("signup-btn").style.display = "inline-block";
         document.getElementById("logout-btn").style.display = "none";
+        document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
         document.getElementById("username").textContent = "";
         localStorage.removeItem("isLoggedIn");
         localStorage.removeItem("username");
@@ -82,6 +155,7 @@ async function updateNavMenu() {
       document.getElementById("login-btn").style.display = "inline-block";
       document.getElementById("signup-btn").style.display = "inline-block";
       document.getElementById("logout-btn").style.display = "none";
+      document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
       document.getElementById("username").textContent = "";
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("username");
@@ -98,6 +172,42 @@ async function updateNavMenu() {
     console.error("Error updating nav menu:", error);
   }
 }
+
+async function fetchNotifications() {
+  try {
+    const response = await fetch("/notifications");
+    if (response.ok) {
+      const notifications = await response.json();
+      displayNotifications(notifications);
+    } else {
+      console.error("Error fetching notifications:", response.status);
+      displayNotifications([]); // Display "NO NEW NOTIFICATION" if there's an error
+    }
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    displayNotifications([]); // Display "NO NEW NOTIFICATION" if there's an error
+  }
+}
+
+function displayNotifications(notifications) {
+  const notificationDropdown = document.querySelector(".notification-dropdown");
+  notificationDropdown.innerHTML = ""; // Clear existing notifications
+
+  if (notifications && notifications.length > 0) {
+    notifications.forEach((notification) => {
+      const notificationItem = document.createElement("div");
+      notificationItem.className = "notification-item";
+      notificationItem.textContent = notification.message;
+      notificationDropdown.appendChild(notificationItem);
+    });
+  } else {
+    const noNotifications = document.createElement("div");
+    noNotifications.className = "notification-item";
+    noNotifications.textContent = "NO NEW NOTIFICATION";
+    notificationDropdown.appendChild(noNotifications);
+  }
+}
+
 async function logout() {
   try {
     const response = await fetch("/auth/logout", { method: "POST" });
@@ -110,10 +220,12 @@ async function logout() {
     console.error("Error during logout:", error);
   }
 }
+
 document.addEventListener("DOMContentLoaded", () => {
   createNavMenu();
   updateNavMenu();
 });
+
 window.addEventListener("storage", (event) => {
   if (event.key === "logout") {
     // Perform logout actions
@@ -121,6 +233,7 @@ window.addEventListener("storage", (event) => {
     document.getElementById("login-btn").style.display = "inline-block";
     document.getElementById("signup-btn").style.display = "inline-block";
     document.getElementById("logout-btn").style.display = "none";
+    document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
     document.getElementById("username").textContent = "";
 
     // Remove the stored session ID
