@@ -172,5 +172,51 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 		activity.Comments = append(activity.Comments, comment)
 	}
 
+	// Retrieve comments liked by the user
+	rows, err = DB.Query(`
+		SELECT c.id, c.body, p.post_id, p.title, p.body
+		FROM comments c
+		JOIN posts p ON c.post_id = p.post_id
+		JOIN "like-comments" lc ON c.id = lc.comment_id
+		WHERE lc.user_id = ?`, userID)
+	if err != nil {
+		return activity, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var comment models.CommentHome
+		var post models.Post
+		err := rows.Scan(&comment.ID, &comment.Body, &post.PostID, &post.Title, &post.Body)
+		if err != nil {
+			return activity, err
+		}
+		comment.PostID = post.PostID
+		activity.LikedComments = append(activity.LikedComments, comment)
+	}
+
+	// Retrieve comments disliked by the user
+	rows, err = DB.Query(`
+		SELECT c.id, c.body, p.post_id, p.title, p.body
+		FROM comments c
+		JOIN posts p ON c.post_id = p.post_id
+		JOIN "dislike-comments" dc ON c.id = dc.comment_id
+		WHERE dc.user_id = ?`, userID)
+	if err != nil {
+		return activity, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var comment models.CommentHome
+		var post models.Post
+		err := rows.Scan(&comment.ID, &comment.Body, &post.PostID, &post.Title, &post.Body)
+		if err != nil {
+			return activity, err
+		}
+		comment.PostID = post.PostID
+		activity.DislikedComments = append(activity.DislikedComments, comment)
+	}
+
 	return activity, nil
 }

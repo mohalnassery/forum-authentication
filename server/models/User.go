@@ -13,8 +13,10 @@ type UserLogin struct {
 }
 
 type UserActivity struct {
-	CreatedPosts  []Post        `json:"createdPosts"`
-	LikedPosts    []Post        `json:"likedPosts"`
-	DislikedPosts []Post        `json:"dislikedPosts"`
-	Comments      []CommentHome `json:"comments"`
+	CreatedPosts     []Post        `json:"createdPosts"`
+	LikedPosts       []Post        `json:"likedPosts"`
+	DislikedPosts    []Post        `json:"dislikedPosts"`
+	Comments         []CommentHome `json:"comments"`
+	LikedComments    []CommentHome `json:"likedComments"`
+	DislikedComments []CommentHome `json:"dislikedComments"`
 }

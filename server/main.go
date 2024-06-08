@@ -20,10 +20,10 @@ func main() {
 	r := http.NewServeMux()
 
 	// Create rate limiters for different routes
-	generalLimiter := rate.NewLimiter(rate.Every(time.Minute), 500) // 500 requests per minute
-	authLimiter := rate.NewLimiter(rate.Every(time.Second), 5)      // 5 requests per second
-	postLimiter := rate.NewLimiter(rate.Every(time.Minute), 500)    // 500 requests per minute
-	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 200) // 200 requests per minute
+	generalLimiter := rate.NewLimiter(rate.Every(time.Minute), 200) // 100 requests per minute
+	authLimiter := rate.NewLimiter(rate.Every(time.Second), 2)      // 2 requests per second
+	postLimiter := rate.NewLimiter(rate.Every(time.Minute), 200)    // 100 requests per minute
+	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 100) // 50 requests per minute
 
 	// Serve the activity.html file
 	r.HandleFunc("/activity.html", func(w http.ResponseWriter, r *http.Request) {

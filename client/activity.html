@@ -32,7 +32,44 @@
 
     <div class="middle-section">
       <h1>User Activity</h1>
-      <div class="activity-section" id="activity-section"></div>
+      <div class="tab">
+        <button class="tablinks" data-tab="CreatedPosts">Created Posts</button>
+        <button class="tablinks" data-tab="CreatedComments">Created Comments</button>
+        <button class="tablinks" data-tab="LikedPosts">Liked Posts</button>
+        <button class="tablinks" data-tab="DislikedPosts">Disliked Posts</button>
+        <button class="tablinks" data-tab="LikedComments">Liked Comments</button>
+        <button class="tablinks" data-tab="DislikedComments">Disliked Comments</button>
+      </div>
+
+      <div id="CreatedPosts" class="tabcontent">
+        <h3>Created Posts</h3>
+        <div id="created-posts-section"></div>
+      </div>
+
+      <div id="CreatedComments" class="tabcontent">
+        <h3>Created Comments</h3>
+        <div id="created-comments-section"></div>
+      </div>
+
+      <div id="LikedPosts" class="tabcontent">
+        <h3>Liked Posts</h3>
+        <div id="liked-posts-section"></div>
+      </div>
+
+      <div id="DislikedPosts" class="tabcontent">
+        <h3>Disliked Posts</h3>
+        <div id="disliked-posts-section"></div>
+      </div>
+
+      <div id="LikedComments" class="tabcontent">
+        <h3>Liked Comments</h3>
+        <div id="liked-comments-section"></div>
+      </div>
+
+      <div id="DislikedComments" class="tabcontent">
+        <h3>Disliked Comments</h3>
+        <div id="disliked-comments-section"></div>
+      </div>
     </div>
 
     <div class="right-section">
@@ -45,14 +82,5 @@
   <script type="module" src="./js/nav.js"></script>
   <script type="module" src="./js/stats.js"></script>
   <script type="module" src="./js/Activity.js"></script>
-  <script type="module">
-    import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from './js/stats.js';
-
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchUserStats();
-      fetchAllUserStats();
-      fetchLeaderboard();
-    });
-  </script>
 </body>
 </html>

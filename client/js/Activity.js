@@ -1,5 +1,11 @@
+import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from './stats.js';
+
 document.addEventListener("DOMContentLoaded", () => {
   fetchUserActivity();
+  fetchUserStats();
+  fetchAllUserStats();
+  fetchLeaderboard();
+  setupTabs();
 });
 
 async function fetchUserActivity() {
@@ -16,70 +22,116 @@ async function fetchUserActivity() {
 }
 
 function displayUserActivity(activity) {
-  const activitySection = document.getElementById("activity-section");
+  const createdPostsSection = document.getElementById("created-posts-section");
+  const createdCommentsSection = document.getElementById("created-comments-section");
+  const likedPostsSection = document.getElementById("liked-posts-section");
+  const dislikedPostsSection = document.getElementById("disliked-posts-section");
+  const likedCommentsSection = document.getElementById("liked-comments-section");
+  const dislikedCommentsSection = document.getElementById("disliked-comments-section");
 
   // Clear any existing content
-  activitySection.innerHTML = '';
+  createdPostsSection.innerHTML = '';
+  createdCommentsSection.innerHTML = '';
+  likedPostsSection.innerHTML = '';
+  dislikedPostsSection.innerHTML = '';
+  likedCommentsSection.innerHTML = '';
+  dislikedCommentsSection.innerHTML = '';
 
   // Ensure activity properties are initialized
   const createdPosts = activity.createdPosts || [];
   const likedPosts = activity.likedPosts || [];
   const dislikedPosts = activity.dislikedPosts || [];
   const comments = activity.comments || [];
+  const likedComments = activity.likedComments || [];
+  const dislikedComments = activity.dislikedComments || [];
 
   // Display created posts
   if (createdPosts.length > 0) {
-    const createdPostsSection = document.createElement("div");
-    createdPostsSection.className = "activity-subsection";
-    createdPostsSection.innerHTML = "<h2>Created Posts</h2>";
     createdPosts.forEach(post => {
       const postElement = document.createElement("div");
       postElement.className = "activity-item";
-      postElement.innerHTML = `<h3>${post.title}</h3><p>${post.body}</p>`;
+      postElement.innerHTML = `<h3><a href="/posts/${post.PostID}">${post.title}</a></h3><p>${post.body}</p>`;
       createdPostsSection.appendChild(postElement);
     });
-    activitySection.appendChild(createdPostsSection);
   }
 
   // Display liked posts
   if (likedPosts.length > 0) {
-    const likedPostsSection = document.createElement("div");
-    likedPostsSection.className = "activity-subsection";
-    likedPostsSection.innerHTML = "<h2>Liked Posts</h2>";
     likedPosts.forEach(post => {
       const postElement = document.createElement("div");
       postElement.className = "activity-item";
-      postElement.innerHTML = `<h3>${post.title}</h3><p>${post.body}</p>`;
+      postElement.innerHTML = `<h3><a href="/posts/${post.PostID}">${post.title}</a></h3><p>${post.body}</p>`;
       likedPostsSection.appendChild(postElement);
     });
-    activitySection.appendChild(likedPostsSection);
   }
 
   // Display disliked posts
   if (dislikedPosts.length > 0) {
-    const dislikedPostsSection = document.createElement("div");
-    dislikedPostsSection.className = "activity-subsection";
-    dislikedPostsSection.innerHTML = "<h2>Disliked Posts</h2>";
     dislikedPosts.forEach(post => {
       const postElement = document.createElement("div");
       postElement.className = "activity-item";
-      postElement.innerHTML = `<h3>${post.title}</h3><p>${post.body}</p>`;
+      postElement.innerHTML = `<h3><a href="/posts/${post.PostID}">${post.title}</a></h3><p>${post.body}</p>`;
       dislikedPostsSection.appendChild(postElement);
     });
-    activitySection.appendChild(dislikedPostsSection);
   }
 
   // Display comments
   if (comments.length > 0) {
-    const commentsSection = document.createElement("div");
-    commentsSection.className = "activity-subsection";
-    commentsSection.innerHTML = "<h2>Comments</h2>";
     comments.forEach(comment => {
       const commentElement = document.createElement("div");
       commentElement.className = "activity-item";
-      commentElement.innerHTML = `<h3>Comment on: ${comment.post.title}</h3><p>${comment.body}</p>`;
-      commentsSection.appendChild(commentElement);
+      commentElement.innerHTML = `<h3>Comment on: <a href="/posts/${comment.PostID}">${comment.post.title}</a></h3><p>${comment.body}</p>`;
+      createdCommentsSection.appendChild(commentElement);
     });
-    activitySection.appendChild(commentsSection);
+  }
+
+  // Display liked comments
+  if (likedComments.length > 0) {
+    likedComments.forEach(comment => {
+      const commentElement = document.createElement("div");
+      commentElement.className = "activity-item";
+      commentElement.innerHTML = `<h3>Liked Comment on: <a href="/posts/${comment.PostID}">${comment.post.title}</a></h3><p>${comment.body}</p>`;
+      likedCommentsSection.appendChild(commentElement);
+    });
+  }
+
+  // Display disliked comments
+  if (dislikedComments.length > 0) {
+    dislikedComments.forEach(comment => {
+      const commentElement = document.createElement("div");
+      commentElement.className = "activity-item";
+      commentElement.innerHTML = `<h3>Disliked Comment on: <a href="/posts/${comment.PostID}">${comment.post.title}</a></h3><p>${comment.body}</p>`;
+      dislikedCommentsSection.appendChild(commentElement);
+    });
+  }
+}
+
+function setupTabs() {
+  const tablinks = document.querySelectorAll(".tablinks");
+  const tabcontents = document.querySelectorAll(".tabcontent");
+
+  tablinks.forEach(tablink => {
+    tablink.addEventListener("click", () => {
+      const tabName = tablink.getAttribute("data-tab");
+
+      // Hide all tab contents
+      tabcontents.forEach(tabcontent => {
+        tabcontent.classList.remove("active");
+      });
+
+      // Remove active class from all tab links
+      tablinks.forEach(tablink => {
+        tablink.classList.remove("active");
+      });
+
+      // Show the selected tab content and add active class to the clicked tab link
+      document.getElementById(tabName).classList.add("active");
+      tablink.classList.add("active");
+    });
+  });
+
+  // Set the first tab as active by default
+  if (tablinks.length > 0) {
+    tablinks[0].click();
   }
 }

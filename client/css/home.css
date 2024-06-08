@@ -102,8 +102,6 @@ a {
   font-size: 14px;
 }
 
-
-
 .main-container {
   display: flex;
   justify-content: space-between;
@@ -120,18 +118,13 @@ a {
   padding-right: 2vw;
 }
 
-
 .create-section {
   background-color: white;
-  /* position: absolute; */
-  /* top: 150px; */
-  /* left: 25vw; */
   display: flex;
   justify-content: space-between;
   padding: 5px 30px;
   align-items: center;
   border-radius: 10px;
-  /* margin: 2px 0 0 30px; */
   box-shadow: 1px 1px 2px 0 rgb(0, 0, 0, 0.2);
 }
 
@@ -149,7 +142,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  /* height: 30%;  */
 }
 
 .leaderboard {
@@ -159,8 +151,6 @@ a {
   width: 16vw;
   border-radius: 10px;
   box-shadow: 1px 1px 2px 0 rgb(0, 0, 0, 0.2);
-  /* width: 300px; */
-  /* display: flex; */
 }
 
 .leaderboard h1 {
@@ -196,7 +186,6 @@ a {
   background-color: grey;
   width: 30px;
   height: 30px;
-  /* height: fit-content; */
 }
 
 .filter-options {
@@ -221,39 +210,6 @@ a {
   margin-bottom: 10px;
   align-items: center;
   margin-top: 10px;
-}
-
-.options div {
-  font-size: 14px;
-  padding: 7px;
-  border-radius: 7px;
-  width: 70%;
-  text-align: center;
-  cursor: pointer;
-  background-color: #cccccc;
-}
-
-.filter-options {
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  gap: 20px;
-  box-shadow: 1px 1px 2px 0 rgb(0, 0, 0, 0.2);
-}
-
-.filter-options h1 {
-  margin: 0;
-  font-size: 25px;
-}
-
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-  align-items: center;
 }
 
 .options div {
@@ -270,7 +226,6 @@ a {
   margin-top: 10px;
   display: flex;
   flex-direction: column;
-  /* background-color: white; */
 }
 
 .post-info {
@@ -410,7 +365,6 @@ a {
   align-items: center;
   margin-bottom: 10px;
   margin-right: 20px;
-
 }
 
 .stat-item p {
@@ -541,7 +495,6 @@ a {
   width: 80%;
 }
 
-
 @media screen and (max-width: 768px) {
   .main-container .left-section,
   .main-container .right-section {
@@ -559,7 +512,6 @@ a {
   .side-menu.active {
     display: block;
     transform: translateX(0);
-
   }
 
   .side-menu .left-section,
@@ -571,5 +523,47 @@ a {
   }
 }
 
+/* Tab styles */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+  margin-top: 20px;
+}
 
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
 
+.tab button:hover {
+  background-color: #ddd;
+}
+
+.tab button.active {
+  background-color: #ccc;
+}
+
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.tabcontent.active {
+  display: block;
+}
+
+.activity-item {
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px 0 rgb(0, 0, 0, 0.2);
+}
