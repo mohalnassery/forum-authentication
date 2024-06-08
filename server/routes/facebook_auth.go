@@ -76,6 +76,19 @@ func FacebookCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if existingUser != nil {
+<<<<<<< HEAD
+=======
+		// // Check if the existing user's auth type matches the current login platform
+		// if existingUser.AuthType != "facebook" {
+		// 	// Display an error message to the user
+		// 	errorMessage := "Login failed. There is already an email registered with another platform."
+		// 	http.Redirect(w, r, "/login?error="+url.QueryEscape(errorMessage), http.StatusTemporaryRedirect)
+		// 	return
+		// }
+
+
+		// User already exists, perform login
+>>>>>>> reboot/master
 		err = CreateSession(w, r, models.UserRegisteration{
 			Username: existingUser.Username,
 		})
