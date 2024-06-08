@@ -33,24 +33,26 @@ func GetNotifications(w http.ResponseWriter, r *http.Request) {
 
 func ClearNotification(w http.ResponseWriter, r *http.Request) {
 	urlParts := strings.Split(r.URL.Path, "/")
-	if len(urlParts) < 3 {
+	if len(urlParts) < 4 {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
 
-	notificationID, err := strconv.Atoi(urlParts[2])
+	notificationID, err := strconv.Atoi(urlParts[3])
 	if err != nil {
 		http.Error(w, "Invalid notification ID", http.StatusBadRequest)
 		return
 	}
 
-	err = database.ClearNotification(notificationID)
+	postID, err := database.ClearNotification(notificationID)
 	if err != nil {
 		http.Error(w, "Failed to clear notification", http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	response := map[string]int{"postID": postID}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func MarkAllNotificationsAsRead(w http.ResponseWriter, r *http.Request) {

@@ -51,6 +51,7 @@ a {
   flex-direction: column;
   width: 85%;
   justify-content: center;
+  margin: 70px 20px 50px;
   gap: 30px;
 }
 
@@ -107,10 +108,14 @@ a {
 
 .content-section {
   margin-top: 25px;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 .content-section p {
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 .content-section h1 {

@@ -8,7 +8,7 @@
 - [X] Retrieve and display notifications on the user's profile page (@Index.js, @postDetails.js).
 - [ ] Implement clearing the notification when user has clicked on the notification, or when the user clicked on (mark all as read).
     - [ ] Create a new endpoint to clear notifications (@Get.go). 
-    - [ ] Create a new endpoint to mark all notifications as read (@Get.go).
+    - [X] Create a new endpoint to mark all notifications as read (@Get.go).
     - [ ] Modify the notification retrieval logic to include the status of the notification (@Get.go).
     - [ ] Adjust the frontend to handle the notification clearing and marking as read.
 

@@ -4,6 +4,20 @@ function createNavMenu() {
   // Inject CSS styles
   const style = document.createElement("style");
   style.innerHTML = `
+      .header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 30px;
+          background-color: #ffffff;
+          box-shadow: 4px 0 5px 0 rgb(0, 0, 0, 0.3);
+          z-index: 999;
+      }
+
     .notification-icon {
       position: relative;
       cursor: pointer;
@@ -82,10 +96,13 @@ function createNavMenu() {
   notificationDropdown.className = "notification-dropdown";
   notificationIcon.appendChild(notificationDropdown);
 
-  // Add event listener to toggle dropdown visibility
-  notificationIcon.addEventListener("click", (event) => {
+  // Add event listener to toggle dropdown visibility and fetch notifications
+  notificationIcon.addEventListener("click", async (event) => {
     event.stopPropagation();
     notificationDropdown.classList.toggle("show");
+    if (notificationDropdown.classList.contains("show")) {
+      await fetchNotifications();
+    }
   });
 
   // Hide the dropdown when clicking outside
@@ -147,7 +164,6 @@ async function updateNavMenu() {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("username", data.username);
         localStorage.setItem("sessionID", data.sessionID);
-        fetchNotifications();
       } else {
         isLoggedIn = false;
         document.getElementById("login-btn").style.display = "inline-block";

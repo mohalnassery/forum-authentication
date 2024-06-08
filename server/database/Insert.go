@@ -80,7 +80,7 @@ func InsertComment(username string, body string, postID int) error {
 		return err
 	}
 	message := fmt.Sprintf("%s commented on your post", username)
-	err = InsertNotification(postAuthorID, message)
+	err = InsertNotification(postAuthorID, message, postID)
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func InsertPostLike(postID int, userID int) error {
 			return err
 		}
 		message := fmt.Sprintf("Your post was liked by %s", username)
-		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", postAuthorID, message)
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", postAuthorID, message, postID)
 		if err != nil {
 			return err
 		}
@@ -188,7 +188,7 @@ func InsertPostDislike(postID int, userID int) error {
 			return err
 		}
 		message := fmt.Sprintf("Your post was disliked by %s", username)
-		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", postAuthorID, message)
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", postAuthorID, message, postID)
 		if err != nil {
 			return err
 		}
@@ -244,8 +244,15 @@ func InsertCommentLike(commentID, userID int) error {
 		if err != nil {
 			return err
 		}
+
+		// Get the postID of the comment
+		postID, err := GetPostIDByCommentID(commentID)
+		if err != nil {
+			return err
+		}
+
 		message := fmt.Sprintf("Your comment was liked by %s", username)
-		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", commentAuthorID, message)
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", commentAuthorID, message, postID)
 		if err != nil {
 			return err
 		}
@@ -316,8 +323,8 @@ func InsertCommentDislike(commentID, userID int) error {
 	return nil
 }
 
-func InsertNotification(userID int, message string) error {
-	_, err := DB.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", userID, message)
+func InsertNotification(userID int, message string, postID int) error {
+	_, err := DB.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", userID, message, postID)
 	return err
 }
 

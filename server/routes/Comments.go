@@ -53,19 +53,6 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create a notification for the post author
-	postAuthorID, err := database.GetPostAuthorID(postID)
-	if err != nil {
-		http.Error(w, "Failed to retrieve post author ID", http.StatusInternalServerError)
-		return
-	}
-	message := user.Username + " commented on your post"
-	err = database.InsertNotification(postAuthorID, message)
-	if err != nil {
-		http.Error(w, "Failed to create notification", http.StatusInternalServerError)
-		return
-	}
-
 	// Return a success response
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Comment posted successfully"})
