@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Activity</title>
+  <link rel="stylesheet" href="./css/home.css">
+</head>
+<body>
+  <div class="main-container">
+    <div class="left-section">
+      <div class="stats" id="user-stats">
+        <h1>My Stats</h1>
+        <div class="stat-item">
+          <p>Number of posts created:</p>
+          <span id="user-posts"></span>
+        </div>
+        <div class="stat-item">
+          <p>Number of comments:</p>
+          <span id="user-comments"></span>
+        </div>
+        <div class="stat-item">
+          <p>Number of Likes:</p>
+          <span id="user-likes"></span>
+        </div>
+        <div class="stat-item">
+          <p>Number of Dislikes:</p>
+          <span id="user-dislikes"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="middle-section">
+      <h1>User Activity</h1>
+      <div class="activity-section" id="activity-section"></div>
+    </div>
+
+    <div class="right-section">
+      <div class="leaderboard">
+        <h1>LeaderBoard</h1>
+        <div id="user-leaderboard"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./js/nav.js"></script>
+  <script type="module" src="./js/stats.js"></script>
+  <script type="module" src="./js/Activity.js"></script>
+  <script type="module">
+    import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from './js/stats.js';
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchUserStats();
+      fetchAllUserStats();
+      fetchLeaderboard();
+    });
+  </script>
+</body>
+</html>

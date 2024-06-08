@@ -145,6 +145,11 @@ function createNavMenu() {
   userAuth.appendChild(userInfo);
   header.appendChild(userAuth);
   document.body.insertBefore(header, document.body.firstChild);
+
+  // Add event listener to username element to redirect to activity page
+  usernameElement.addEventListener("click", () => {
+    window.location.href = "/activity.html";
+  });
 }
 
 let isLoggedIn = false; // Variable to track login status

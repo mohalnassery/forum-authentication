@@ -10,6 +10,7 @@ type CommentHome struct {
 	UserLiked    bool   `json:"userLiked"`
 	UserDisliked bool   `json:"userDisliked"`
 	IsAuthor     bool   `json:"isAuthor"`
+	PostID       int    `json:"postID"`
 }
 
 type CommentRequest struct {

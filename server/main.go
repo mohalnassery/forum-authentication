@@ -25,6 +25,10 @@ func main() {
 	postLimiter := rate.NewLimiter(rate.Every(time.Minute), 500)    // 500 requests per minute
 	commentLimiter := rate.NewLimiter(rate.Every(time.Minute), 200) // 200 requests per minute
 
+	// Serve the activity.html file
+	r.HandleFunc("/activity.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../client/activity.html")
+	})
 	// Displaying pages
 	r.Handle("/", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
 	r.Handle("/register", limitMiddleware(generalLimiter, http.HandlerFunc(routes.HandleGet)))
@@ -85,6 +89,7 @@ func main() {
 	r.Handle("/notifications", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetNotifications)))
 	r.Handle("/notifications/clear/{notificationId}", limitMiddleware(generalLimiter, http.HandlerFunc(routes.ClearNotification)))
 	r.Handle("/notifications/mark-all-read", limitMiddleware(generalLimiter, http.HandlerFunc(routes.MarkAllNotificationsAsRead)))
+	r.Handle("/user-activity", limitMiddleware(generalLimiter, http.HandlerFunc(routes.GetUserActivity)))
 
 	// Serving static files
 	r.Handle("/js/", http.FileServer(http.Dir("../client")))
