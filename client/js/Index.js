@@ -3,12 +3,19 @@ import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from './stats.js'
 document.addEventListener("DOMContentLoaded", () => {
   // Fetch posts and display them
   fetchPosts();
-  // Fetch user stats and display them
-  fetchUserStats();
+  
+  // Check if the user is logged in before fetching user stats
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  if (isLoggedIn) {
+    fetchUserStats();
+  }
+  
   // Fetch all user stats and display them
   fetchAllUserStats();
+  
   // Fetch leaderboard and display it
   fetchLeaderboard();
+  
   // Create Category and display it
   createCategoryElements();
   createBurgerMenu();
@@ -38,6 +45,8 @@ window.addEventListener("loginStatusUpdate", (event) => {
     document.querySelectorAll("#user-stats").forEach((element) => {
       element.style.display = "block";
     });
+    // Fetch user stats immediately after login
+    fetchUserStats();
   } else {
     const createBtn = document.getElementById("create-btn");
     if (createBtn) createBtn.style.display = "none";
@@ -49,6 +58,30 @@ window.addEventListener("loginStatusUpdate", (event) => {
     });
   }
 });
+
+// Function to handle logout
+function handleLogout() {
+  // Clear localStorage
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("username");
+
+  // Dispatch loginStatusUpdate event
+  const event = new CustomEvent("loginStatusUpdate", {
+    detail: { isLoggedIn: false },
+  });
+  window.dispatchEvent(event);
+
+  // Redirect to home page after a short delay to ensure logout process completes
+  setTimeout(() => {
+    window.location.href = "/";
+  }, 500); // Adjust the delay as needed
+}
+
+// Add event listener for logout button
+const logoutButton = document.getElementById("logout-button");
+if (logoutButton) {
+  logoutButton.addEventListener("click", handleLogout);
+}
 
 async function fetchCategories() {
   try {

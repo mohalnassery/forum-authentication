@@ -53,7 +53,7 @@ To run the application locally using go or docker, follow these steps:
 
 ### Using Go
 
-1. Clone the repository: `git clone https://learn.reboot01.com/git/halmakan/forum.git`
+1. Clone the repository: `git clone https://learn.reboot01.com/git/mohabdulla/forum.git`
 2. Navigate to the project directory: `cd forum/server`
 3. Set the environment variables for the TLS certificate and key files:
    ```sh

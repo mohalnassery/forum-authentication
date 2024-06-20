@@ -1,4 +1,5 @@
 import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
+import { fetchUserStats } from './stats.js'; // Add this import
 
 function createNavMenu() {
   // Inject CSS styles
@@ -169,6 +170,7 @@ async function updateNavMenu() {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("username", data.username);
         localStorage.setItem("sessionID", data.sessionID);
+        fetchUserStats(); // Fetch user stats if logged in
       } else {
         isLoggedIn = false;
         document.getElementById("login-btn").style.display = "inline-block";
@@ -212,7 +214,20 @@ async function logout() {
   try {
     const response = await fetch("/auth/logout", { method: "POST" });
     if (response.ok) {
-      window.location.href = "/";
+      // Clear localStorage
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("username");
+
+      // Dispatch loginStatusUpdate event
+      const event = new CustomEvent("loginStatusUpdate", {
+        detail: { isLoggedIn: false },
+      });
+      window.dispatchEvent(event);
+
+      // Redirect to home page after a short delay to ensure logout process completes
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500); // Adjust the delay as needed
     } else {
       console.error("Logout failed");
     }
