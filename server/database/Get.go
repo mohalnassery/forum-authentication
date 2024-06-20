@@ -169,6 +169,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 			return activity, err
 		}
 		comment.PostID = post.PostID
+		comment.Post = post // Ensure the Post field is populated
 		activity.Comments = append(activity.Comments, comment)
 	}
 
@@ -192,6 +193,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 			return activity, err
 		}
 		comment.PostID = post.PostID
+		comment.Post = post // Ensure the Post field is populated
 		activity.LikedComments = append(activity.LikedComments, comment)
 	}
 
@@ -215,6 +217,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 			return activity, err
 		}
 		comment.PostID = post.PostID
+		comment.Post = post // Ensure the Post field is populated
 		activity.DislikedComments = append(activity.DislikedComments, comment)
 	}
 

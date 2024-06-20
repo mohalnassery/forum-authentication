@@ -1,11 +1,17 @@
 import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from './stats.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-  fetchUserActivity();
-  fetchUserStats();
-  fetchAllUserStats();
-  fetchLeaderboard();
-  setupTabs();
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  if (isLoggedIn) {
+    fetchUserActivity();
+    fetchUserStats();
+    fetchAllUserStats();
+    fetchLeaderboard();
+    setupTabs();
+  } else {
+    // Handle the case where the user is not logged in
+    displayNotLoggedInMessage();
+  }
 });
 
 async function fetchUserActivity() {
@@ -15,6 +21,7 @@ async function fetchUserActivity() {
       throw new Error("Failed to fetch user activity");
     }
     const activity = await response.json();
+    console.log(activity); // Log the response to check the structure
     displayUserActivity(activity);
   } catch (error) {
     console.error(error);
@@ -50,7 +57,7 @@ function displayUserActivity(activity) {
     createdPosts.forEach(post => {
       const postElement = document.createElement("div");
       postElement.className = "activity-item";
-      postElement.innerHTML = `<h3><a href="/posts/${post.PostID}">${post.title}</a></h3><p>${post.body}</p>`;
+      postElement.innerHTML = `<h3><a href="/post-details/${post.postID}">${post.title}</a></h3><p>${post.body}</p>`;
       createdPostsSection.appendChild(postElement);
     });
   }
@@ -60,7 +67,7 @@ function displayUserActivity(activity) {
     likedPosts.forEach(post => {
       const postElement = document.createElement("div");
       postElement.className = "activity-item";
-      postElement.innerHTML = `<h3><a href="/posts/${post.PostID}">${post.title}</a></h3><p>${post.body}</p>`;
+      postElement.innerHTML = `<h3><a href="/post-details/${post.postID}">${post.title}</a></h3><p>${post.body}</p>`;
       likedPostsSection.appendChild(postElement);
     });
   }
@@ -70,7 +77,7 @@ function displayUserActivity(activity) {
     dislikedPosts.forEach(post => {
       const postElement = document.createElement("div");
       postElement.className = "activity-item";
-      postElement.innerHTML = `<h3><a href="/posts/${post.PostID}">${post.title}</a></h3><p>${post.body}</p>`;
+      postElement.innerHTML = `<h3><a href="/post-details/${post.postID}">${post.title}</a></h3><p>${post.body}</p>`;
       dislikedPostsSection.appendChild(postElement);
     });
   }
@@ -80,7 +87,8 @@ function displayUserActivity(activity) {
     comments.forEach(comment => {
       const commentElement = document.createElement("div");
       commentElement.className = "activity-item";
-      commentElement.innerHTML = `<h3>Comment on: <a href="/posts/${comment.PostID}">${comment.post.title}</a></h3><p>${comment.body}</p>`;
+      const postTitle = comment.post ? comment.post.title : "Unknown Post"; // Handle missing post field
+      commentElement.innerHTML = `<h3>Comment on: <a href="/post-details/${comment.postID}">${postTitle}</a></h3><p>${comment.body}</p>`;
       createdCommentsSection.appendChild(commentElement);
     });
   }
@@ -90,7 +98,8 @@ function displayUserActivity(activity) {
     likedComments.forEach(comment => {
       const commentElement = document.createElement("div");
       commentElement.className = "activity-item";
-      commentElement.innerHTML = `<h3>Liked Comment on: <a href="/posts/${comment.PostID}">${comment.post.title}</a></h3><p>${comment.body}</p>`;
+      const postTitle = comment.post ? comment.post.title : "Unknown Post"; // Handle missing post field
+      commentElement.innerHTML = `<h3>Liked Comment on: <a href="/post-details/${comment.postID}">${postTitle}</a></h3><p>${comment.body}</p>`;
       likedCommentsSection.appendChild(commentElement);
     });
   }
@@ -100,7 +109,8 @@ function displayUserActivity(activity) {
     dislikedComments.forEach(comment => {
       const commentElement = document.createElement("div");
       commentElement.className = "activity-item";
-      commentElement.innerHTML = `<h3>Disliked Comment on: <a href="/posts/${comment.PostID}">${comment.post.title}</a></h3><p>${comment.body}</p>`;
+      const postTitle = comment.post ? comment.post.title : "Unknown Post"; // Handle missing post field
+      commentElement.innerHTML = `<h3>Disliked Comment on: <a href="/post-details/${comment.postID}">${postTitle}</a></h3><p>${comment.body}</p>`;
       dislikedCommentsSection.appendChild(commentElement);
     });
   }
@@ -134,4 +144,9 @@ function setupTabs() {
   if (tablinks.length > 0) {
     tablinks[0].click();
   }
+}
+
+function displayNotLoggedInMessage() {
+  const mainContainer = document.querySelector(".main-container");
+  mainContainer.innerHTML = "<p>You need to be logged in to view this page.</p>";
 }
